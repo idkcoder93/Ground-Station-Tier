@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CDH-GroundStation-Group6", "CDH-GroundStation-Group6\CDH-GroundStation-Group6.csproj", "{558DA174-7D91-46EC-A73D-0F33CBBA2BB0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{558DA174-7D91-46EC-A73D-0F33CBBA2BB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{558DA174-7D91-46EC-A73D-0F33CBBA2BB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{558DA174-7D91-46EC-A73D-0F33CBBA2BB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{558DA174-7D91-46EC-A73D-0F33CBBA2BB0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68CE5B97-979B-40B9-BED9-C45B3F990DDE}
+	EndGlobalSection
+EndGlobal
