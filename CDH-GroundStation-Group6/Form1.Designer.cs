@@ -2,15 +2,8 @@
 {
     partial class SignInPage
     {
-        /// <summary>
-        ///  Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        ///  Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -22,97 +15,117 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             SignInPanel = new Panel();
-            companyLogo = new PictureBox();
-            userID = new TextBox();
-            userPassword = new TextBox();
-            SignInLabel = new Label();
+            signInLabel = new Label();
+            enterpriseLogo = new PictureBox();
+            userTextBox = new TextBox();
+            passTextBox = new TextBox();
+            signInButton = new Button();
             SignInPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)companyLogo).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)enterpriseLogo).BeginInit();
             SuspendLayout();
             // 
             // SignInPanel
             // 
-            SignInPanel.Controls.Add(companyLogo);
-            SignInPanel.Controls.Add(userID);
-            SignInPanel.Controls.Add(userPassword);
-            SignInPanel.Controls.Add(SignInLabel);
-            SignInPanel.Location = new Point(472, 200);
+            SignInPanel.Anchor = AnchorStyles.None;
+            SignInPanel.Controls.Add(signInLabel);
+            SignInPanel.Controls.Add(enterpriseLogo);
+            SignInPanel.Controls.Add(userTextBox);
+            SignInPanel.Controls.Add(passTextBox);
+            SignInPanel.Controls.Add(signInButton);
+            SignInPanel.Location = new Point(356, 293);
+            SignInPanel.Margin = new Padding(4);
             SignInPanel.Name = "SignInPanel";
-            SignInPanel.Size = new Size(296, 300);
+            SignInPanel.Padding = new Padding(13);
+            SignInPanel.Size = new Size(650, 768);
             SignInPanel.TabIndex = 0;
-            SignInPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
             // 
-            // companyLogo
+            // signInLabel
             // 
-            companyLogo.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            companyLogo.Image = Properties.Resources.mission_control__2_;
-            companyLogo.Location = new Point(83, 41);
-            companyLogo.Name = "companyLogo";
-            companyLogo.Size = new Size(125, 205);
-            companyLogo.TabIndex = 4;
-            companyLogo.TabStop = false;
+            signInLabel.AutoSize = true;
+            signInLabel.Dock = DockStyle.Top;
+            signInLabel.Font = new Font("Arial", 18F, FontStyle.Bold);
+            signInLabel.Location = new Point(13, 13);
+            signInLabel.Margin = new Padding(4, 0, 4, 0);
+            signInLabel.Name = "signInLabel";
+            signInLabel.Size = new Size(571, 56);
+            signInLabel.TabIndex = 0;
+            signInLabel.Text = "Ground Station - Sign In";
+            signInLabel.Click += signInLabel_Click;
             // 
-            // userID
+            // enterpriseLogo
             // 
-            userID.Dock = DockStyle.Bottom;
-            userID.Location = new Point(0, 246);
-            userID.Name = "userID";
-            userID.PlaceholderText = "User ID";
-            userID.Size = new Size(296, 27);
-            userID.TabIndex = 3;
-            userID.TextAlign = HorizontalAlignment.Center;
+            enterpriseLogo.Image = Properties.Resources.mission_control__2_;
+            enterpriseLogo.Location = new Point(65, 102);
+            enterpriseLogo.Margin = new Padding(4);
+            enterpriseLogo.Name = "enterpriseLogo";
+            enterpriseLogo.Size = new Size(520, 192);
+            enterpriseLogo.SizeMode = PictureBoxSizeMode.Zoom;
+            enterpriseLogo.TabIndex = 1;
+            enterpriseLogo.TabStop = false;
             // 
-            // userPassword
+            // userTextBox
             // 
-            userPassword.Dock = DockStyle.Bottom;
-            userPassword.Location = new Point(0, 273);
-            userPassword.Name = "userPassword";
-            userPassword.PlaceholderText = "Password";
-            userPassword.Size = new Size(296, 27);
-            userPassword.TabIndex = 2;
-            userPassword.TextAlign = HorizontalAlignment.Center;
+            userTextBox.Font = new Font("Arial", 14F);
+            userTextBox.Location = new Point(65, 333);
+            userTextBox.Margin = new Padding(4);
+            userTextBox.Name = "userTextBox";
+            userTextBox.PlaceholderText = "Username";
+            userTextBox.Size = new Size(519, 50);
+            userTextBox.TabIndex = 2;
+            userTextBox.TextAlign = HorizontalAlignment.Center;
             // 
-            // SignInLabel
+            // passTextBox
             // 
-            SignInLabel.Dock = DockStyle.Top;
-            SignInLabel.Font = new Font("Arial", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            SignInLabel.Location = new Point(0, 0);
-            SignInLabel.Name = "SignInLabel";
-            SignInLabel.Size = new Size(296, 313);
-            SignInLabel.TabIndex = 0;
-            SignInLabel.Text = "Sign In";
-            SignInLabel.TextAlign = ContentAlignment.TopCenter;
+            passTextBox.Font = new Font("Arial", 14F);
+            passTextBox.Location = new Point(65, 410);
+            passTextBox.Margin = new Padding(4);
+            passTextBox.Name = "passTextBox";
+            passTextBox.PasswordChar = '*';
+            passTextBox.PlaceholderText = "Password";
+            passTextBox.Size = new Size(519, 50);
+            passTextBox.TabIndex = 3;
+            passTextBox.TextAlign = HorizontalAlignment.Center;
+            // 
+            // signInButton
+            // 
+            signInButton.BackColor = Color.DodgerBlue;
+            signInButton.Font = new Font("Arial", 14F, FontStyle.Bold);
+            signInButton.ForeColor = Color.White;
+            signInButton.Location = new Point(195, 512);
+            signInButton.Margin = new Padding(4);
+            signInButton.Name = "signInButton";
+            signInButton.Size = new Size(260, 64);
+            signInButton.TabIndex = 4;
+            signInButton.Text = "Sign In";
+            signInButton.UseVisualStyleBackColor = false;
             // 
             // SignInPage
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ButtonShadow;
-            ClientSize = new Size(1255, 681);
+            BackColor = SystemColors.ButtonFace;
+            ClientSize = new Size(1331, 983);
             Controls.Add(SignInPanel);
+            Margin = new Padding(4);
             Name = "SignInPage";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Welcome to Ground Control - Sign In";
-            Load += SignInPage_Load;
+            Text = "Ground Station - Sign In";
             SignInPanel.ResumeLayout(false);
             SignInPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)companyLogo).EndInit();
+            ((System.ComponentModel.ISupportInitialize)enterpriseLogo).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
         private Panel SignInPanel;
-        private Label SignInLabel;
-        private TextBox userPassword;
-        private TextBox userID;
-        private PictureBox companyLogo;
+        private TextBox passTextBox;
+        private Button signInButton;
+        private TextBox userTextBox;
+        private Label signInLabel;
+        private PictureBox enterpriseLogo;
     }
 }

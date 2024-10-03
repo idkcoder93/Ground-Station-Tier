@@ -11,5 +11,15 @@ namespace CDH_GroundStation_Group6
         {
 
         }
+
+        private void passTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void signInLabel_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
