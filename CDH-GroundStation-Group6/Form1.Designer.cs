@@ -18,6 +18,7 @@
         private void InitializeComponent()
         {
             SignInPanel = new Panel();
+            errorMessageLabel = new Label();
             signInLabel = new Label();
             enterpriseLogo = new PictureBox();
             userTextBox = new TextBox();
@@ -30,17 +31,28 @@
             // SignInPanel
             // 
             SignInPanel.Anchor = AnchorStyles.None;
+            SignInPanel.Controls.Add(errorMessageLabel);
             SignInPanel.Controls.Add(signInLabel);
             SignInPanel.Controls.Add(enterpriseLogo);
             SignInPanel.Controls.Add(userTextBox);
             SignInPanel.Controls.Add(passTextBox);
             SignInPanel.Controls.Add(signInButton);
-            SignInPanel.Location = new Point(356, 293);
+            SignInPanel.Location = new Point(475, 255);
             SignInPanel.Margin = new Padding(4);
             SignInPanel.Name = "SignInPanel";
             SignInPanel.Padding = new Padding(13);
             SignInPanel.Size = new Size(650, 768);
             SignInPanel.TabIndex = 0;
+            // 
+            // errorMessageLabel
+            // 
+            errorMessageLabel.AutoSize = true;
+            errorMessageLabel.Font = new Font("Arial", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            errorMessageLabel.ForeColor = Color.Red;
+            errorMessageLabel.Location = new Point(112, 635);
+            errorMessageLabel.Name = "errorMessageLabel";
+            errorMessageLabel.Size = new Size(0, 27);
+            errorMessageLabel.TabIndex = 5;
             // 
             // signInLabel
             // 
@@ -101,13 +113,14 @@
             signInButton.TabIndex = 4;
             signInButton.Text = "Sign In";
             signInButton.UseVisualStyleBackColor = false;
+            signInButton.Click += signInLabel_Click;
             // 
             // SignInPage
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ButtonFace;
-            ClientSize = new Size(1331, 983);
+            ClientSize = new Size(1537, 1222);
             Controls.Add(SignInPanel);
             Margin = new Padding(4);
             Name = "SignInPage";
@@ -127,5 +140,6 @@
         private TextBox userTextBox;
         private Label signInLabel;
         private PictureBox enterpriseLogo;
+        private Label errorMessageLabel;
     }
 }

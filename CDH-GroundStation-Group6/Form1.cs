@@ -19,7 +19,26 @@ namespace CDH_GroundStation_Group6
 
         private void signInLabel_Click(object sender, EventArgs e)
         {
+            // Retrieve user credentials
+            string username = userTextBox.Text;
+            string password = passTextBox.Text;
 
+            // User instance
+            User tempUser = new User(username, password);
+
+            // Call database instance
+            Database userDB = new Database();
+
+            // Function to search for user and logic
+            if (userDB.SearchUserInDB(tempUser) == true )
+            {
+                // open next page
+            }
+            else
+            {
+                string errorMessage = "Incorrect credential or no connection";
+                errorMessageLabel.Text = errorMessage;
+            }
         }
     }
 }

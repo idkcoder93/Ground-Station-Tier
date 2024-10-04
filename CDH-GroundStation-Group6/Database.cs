@@ -1,46 +1,55 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-//using Encryption;
+using System;
 
 namespace CDH_GroundStation_Group6
 {
     internal class Database
     {
         // Read-only class-level field
-        private readonly MongoClient dbClient;
-        private readonly IMongoCollection<BsonDocument> userinfo;
         private readonly string key = "key1234567890123"; // 16-BYTE key
+        private const string connectionUri = "mongodb+srv://alexfridman93:8aa6IITgDET8CaTx@groundstationdb.mj8g0.mongodb.net/?retryWrites=true&w=majority&appName=GroundStationDB";
+
+        // MongoClient and database object as class-level fields
+        private readonly MongoClient client;
+        private readonly IMongoDatabase database;
 
         // Initialize it in the constructor
         public Database()
         {
-            dbClient = new MongoClient("mongodb+srv://alexfridman93:8aa6IITgDET8CaTx@groundstationdb.mj8g0.mongodb.net/?retryWrites=true&w=majority&appName=GroundStationDB");
-            IMongoDatabase database_schema = dbClient.GetDatabase("GroundStationDB");
+            var settings = MongoClientSettings.FromConnectionString(connectionUri);
 
-            // Initialize userinfo with the 'Users' collection
-            userinfo = database_schema.GetCollection<BsonDocument>("Users");
+            // Set the ServerApi field of the settings object to set the version of the Stable API on the client
+            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+
+            // Create a new client and connect to the server
+            client = new MongoClient(settings);
+
+            // Get the database from the server
+            database = client.GetDatabase("GroundStationDB");
         }
 
-        // Searches through Users collection to see if results match
-        public Boolean SearchUserInDB(string username, string password)
+        // Searches through Users collection to see if the results match
+        public Boolean SearchUserInDB(User currentUser)
         {
+            // Get the 'Users' collection from the database
+            var userCollection = database.GetCollection<BsonDocument>("Users");
 
-            // Fetch user from database by username
-            var filter = Builders<BsonDocument>.Filter.Eq("username", username);
-            var user = userinfo.Find(filter).FirstOrDefault();
+            var filter = Builders<BsonDocument>.Filter.Eq("username", currentUser.Username);
+            var user = userCollection.Find(filter).FirstOrDefault();
 
             if (user == null)
             {
                 return false;  // User not found
             }
 
-            // Get the stored encrypted password and IV from the database
             string encryptedPassword = user["password"].AsString;
 
-            // Decrypt Password and check if matches
+            // Decrypt password and check if it matches
             string decryptedPassword = Encrpytion.Decrypt(encryptedPassword, this.key);
-            if (decryptedPassword == password) { return true; }
-            else { return false; }
+
+            // Return true if passwords match, otherwise false
+            return decryptedPassword == currentUser.Password;
         }
 
         //public void CreateUser(User user)
