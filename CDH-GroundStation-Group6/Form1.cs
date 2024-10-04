@@ -19,6 +19,8 @@ namespace CDH_GroundStation_Group6
 
         private void signInLabel_Click(object sender, EventArgs e)
         {
+            errorMessageLabel.Text = string.Empty;
+            
             // Retrieve user credentials
             string username = userTextBox.Text;
             string password = passTextBox.Text;
