@@ -34,7 +34,9 @@ namespace CDH_GroundStation_Group6
             // Function to search for user and logic
             if (userDB.SearchUserInDB(tempUser) == true )
             {
-                // open next page
+                this.Hide();
+                Dashboard.Dashboard dashboardForm = new Dashboard.Dashboard();
+                dashboardForm.Show();
             }
             else
             {
