@@ -17,10 +17,10 @@ namespace CDH_GroundStation_Group6
 
         }
 
-        private void signInLabel_Click(object sender, EventArgs e)
+        private async void signInLabel_Click(object sender, EventArgs e)
         {
             errorMessageLabel.Text = string.Empty;
-            
+
             // Retrieve user credentials
             string username = userTextBox.Text;
             string password = passTextBox.Text;
@@ -32,7 +32,9 @@ namespace CDH_GroundStation_Group6
             Database userDB = new Database();
 
             // Function to search for user and logic
-            if (userDB.SearchUserInDB(tempUser) == true )
+            bool isUserFound = await userDB.SearchUserInDB(tempUser);
+
+            if (isUserFound)
             {
                 this.Hide();
                 Dashboard.Dashboard dashboardForm = new Dashboard.Dashboard();
@@ -44,5 +46,6 @@ namespace CDH_GroundStation_Group6
                 errorMessageLabel.Text = errorMessage;
             }
         }
+
     }
 }
