@@ -30,7 +30,7 @@ namespace CDH_GroundStation_Group6
         }
 
         // Searches through Users collection to see if the results match
-        public Boolean SearchUserInDB(User currentUser)
+        public Task<bool> SearchUserInDB(User currentUser)
         {
             // Get the 'Users' collection from the database
             var userCollection = database.GetCollection<BsonDocument>("Users");
@@ -40,7 +40,7 @@ namespace CDH_GroundStation_Group6
 
             if (user == null)
             {
-                return false;  // User not found
+                return Task.FromResult(false);  // User not found
             }
 
             string encryptedPassword = user["password"].AsString;
@@ -49,7 +49,7 @@ namespace CDH_GroundStation_Group6
             string decryptedPassword = Encrpytion.Decrypt(encryptedPassword, this.key);
 
             // Return true if passwords match, otherwise false
-            return decryptedPassword == currentUser.Password;
+            return Task.FromResult(decryptedPassword == currentUser.Password);
         }
 
         //public void CreateUser(User user)
