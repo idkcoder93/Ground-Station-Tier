@@ -1,0 +1,6 @@
+@ground_station_HostAddress = http://localhost:5171
+
+GET {{ground_station_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
