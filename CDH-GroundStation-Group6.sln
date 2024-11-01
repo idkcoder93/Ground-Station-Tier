@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dashboard", "Dashboard\Dash
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ground station", "..\ground station\ground station\ground station\ground station.csproj", "{0090B242-7CCB-46FF-9FC2-D2E8A09B244D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroundStationPayloadOpsTests", "GroundStationPayloadOpsTests\GroundStationPayloadOpsTests.csproj", "{2DE34372-C9C2-4616-A67D-2EE8A1175D0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{0090B242-7CCB-46FF-9FC2-D2E8A09B244D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0090B242-7CCB-46FF-9FC2-D2E8A09B244D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0090B242-7CCB-46FF-9FC2-D2E8A09B244D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DE34372-C9C2-4616-A67D-2EE8A1175D0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DE34372-C9C2-4616-A67D-2EE8A1175D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DE34372-C9C2-4616-A67D-2EE8A1175D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DE34372-C9C2-4616-A67D-2EE8A1175D0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
