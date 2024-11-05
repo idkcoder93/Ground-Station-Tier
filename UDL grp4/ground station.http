@@ -1,0 +1,6 @@
+@UDL_grp4_HostAddress = http://localhost:5014
+
+GET {{UDL_grp4_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
