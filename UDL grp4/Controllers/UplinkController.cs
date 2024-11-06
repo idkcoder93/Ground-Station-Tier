@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ground_station.Models;
 using ground_station.Services;
+using System.Threading.Tasks;
 
 namespace ground_station.Controllers
 {
@@ -8,30 +9,33 @@ namespace ground_station.Controllers
     [Route("api/[controller]")]
     public class UplinkController : ControllerBase
     {
-        private readonly UplinkCommunicationService _uplinkService;
+        private readonly DataForwardingService _dataForwardingService;
 
-        public UplinkController(UplinkCommunicationService uplinkService)
+        public UplinkController(DataForwardingService dataForwardingService)
         {
-            _uplinkService = uplinkService;
+            _dataForwardingService = dataForwardingService;
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] CommandPacket commandPacket)
+        public async Task<IActionResult> Post([FromBody] CommandPacket commandPacket)
         {
-            if (commandPacket == null || !commandPacket.IsValid)
+            if (commandPacket == null)
             {
                 return BadRequest("Invalid command packet.");
             }
 
-            _uplinkService.SendCommand(commandPacket);
-            return Ok(new { Message = "Data sent successfully." });
-        }
+            // Forward the data to another service
+            var destinationUrl = ""; // Replace with the actual URL of the destination service
+            var forwardSuccess = await _dataForwardingService.ForwardDataAsync(destinationUrl, commandPacket);
 
-        [HttpGet]
-        public IActionResult Get()
-        {
-            var commands = _uplinkService.GetAllCommands();
-            return Ok(commands);
+            if (forwardSuccess)
+            {
+                return Ok(new { Message = "Uplink data sent and forwarded successfully." });
+            }
+            else
+            {
+                return StatusCode(500, new { Message = "Failed to forward uplink data." });
+            }
         }
     }
 }

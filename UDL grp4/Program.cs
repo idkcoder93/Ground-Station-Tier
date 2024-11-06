@@ -34,6 +34,8 @@ namespace ground_station
 
             // Register DownlinkCommunicationService as Scoped
             services.AddSingleton<DownlinkCommunicationService>();
+
+            services.AddHttpClient<DataForwardingService>();// Register the forwarding service with HttpClient
         }
 
 
