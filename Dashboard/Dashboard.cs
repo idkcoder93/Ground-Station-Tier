@@ -2,6 +2,7 @@ namespace Dashboard
 {
     public partial class Dashboard : Form
     {
+        Destination Destination;
         public Dashboard()
         {
             InitializeComponent();
@@ -25,8 +26,27 @@ namespace Dashboard
                 status.StatusState = "ONLINE";
             }
 
-            // need to made this a function VALIDATION
-            if (satRadioButton.Checked)
+            // Validate destination selection
+            if (ValidateDestinationSelection(destination))
+            {
+                // Packetize data (PAYLOAD OPS CODE HERE)
+                // Send packet over network (Uplink/Downlink CODE HERE)
+
+                MessageBox.Show("Command has been sent", "", MessageBoxButtons.OK);
+                ClearCommandInputs();
+            }
+
+            ClearCommandInputs();
+        }
+
+        private bool ValidateDestinationSelection(Destination destination)
+        {
+            if (satRadioButton.Checked && centreRadioButton.Checked)
+            {
+                MessageBox.Show("An error has occurred.", "Both boxes cannot be selected", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            else if (satRadioButton.Checked)
             {
                 destination.DestinationInfo = "SATELLITE";
             }
@@ -36,14 +56,10 @@ namespace Dashboard
             }
             else
             {
-                MessageBox.Show("An error has occurred.", "Both boxes can not be selected", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Please select a destination.", "Destination Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
             }
-
-            // packetize data (PAYLOAD OPS CODE HERE)
-            // send packet over network (Uplink/Downlink CODE HERE)
-
-            MessageBox.Show("Command has been sent", "", MessageBoxButtons.OK);
-            ClearCommandInputs();
+            return true;
         }
 
         private void consoleTextBox_TextChanged(object sender, EventArgs e)
