@@ -25,7 +25,7 @@ namespace ground_station.Controllers
             }
 
             // Forward the data to another service
-            var destinationUrl = ""; // Replace with the actual URL of the destination service
+            var destinationUrl = "http://localhost:5297/api/receive"; // Replace with the actual URL of the destination service
             var forwardSuccess = await _dataForwardingService.ForwardDataAsync(destinationUrl, commandPacket);
 
             if (forwardSuccess)
