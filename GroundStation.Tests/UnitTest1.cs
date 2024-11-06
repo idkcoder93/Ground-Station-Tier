@@ -13,10 +13,16 @@ namespace GroundStation.Tests
 {
     public class UplinkCommunicationServiceTests
     {
+        // Mock logger used for capturing log messages during tests
         private readonly Mock<ILogger<UplinkCommunicationService>> _mockLogger;
+
+        // Mock logging service used for additional logging functionality
         private readonly Mock<LoggingAndMonitoringService> _mockLoggingService;
+
+        // Instance of the service being tested
         private readonly UplinkCommunicationService _service;
 
+        // Constructor to initialize the mock logger, mock logging service, and service instance
         public UplinkCommunicationServiceTests()
         {
             _mockLogger = new Mock<ILogger<UplinkCommunicationService>>();
@@ -25,10 +31,11 @@ namespace GroundStation.Tests
             _service = new UplinkCommunicationService(_mockLoggingService.Object, _mockLogger.Object);
         }
 
+        // Test case to verify logging behavior when a command is sent
         [Fact]
         public void SendCommand_ShouldLogInformation_WhenCommandSent()
         {
-            // Arrange
+            // Arrange: Create a valid CommandPacket
             var commandPacket = new CommandPacket(
                 command: "CollectData",
                 parameters: new Dictionary<string, string>
@@ -39,10 +46,10 @@ namespace GroundStation.Tests
                 source: "Scientific Operations"
             );
 
-            // Act
+            // Act: Call SendCommand with the command packet
             _service.SendCommand(commandPacket);
 
-            // Assert
+            // Assert: Verify that information is logged
             _mockLogger.Verify(
                 logger => logger.Log(
                     LogLevel.Information,
@@ -54,20 +61,21 @@ namespace GroundStation.Tests
             );
         }
 
+        // Test case to verify logging behavior when an empty command is sent
         [Fact]
         public void SendCommand_ShouldLogWarning_WhenCommandIsEmpty()
         {
-            // Arrange
+            // Arrange: Create a CommandPacket with an empty command
             var commandPacket = new CommandPacket(
                 command: "",
                 parameters: new Dictionary<string, string>(),
                 source: "Ground Station"
             );
 
-            // Act
+            // Act: Call SendCommand with the empty command packet
             _service.SendCommand(commandPacket);
 
-            // Assert
+            // Assert: Verify that a warning is logged
             _mockLogger.Verify(
                 logger => logger.Log(
                     LogLevel.Warning,
@@ -79,10 +87,11 @@ namespace GroundStation.Tests
             );
         }
 
+        // Test case to verify logging behavior when parameters are missing
         [Fact]
         public void SendCommand_ShouldLogError_WhenParametersAreMissing()
         {
-            // Arrange
+            // Arrange: Create a CommandPacket with null parameters
             var commandPacket = new CommandPacket(
                 command: "CollectData",
                 parameters: null,
@@ -90,10 +99,10 @@ namespace GroundStation.Tests
                 destination: "Spacecraft"
             );
 
-            // Act
+            // Act: Call SendCommand with the command packet
             _service.SendCommand(commandPacket);
 
-            // Assert
+            // Assert: Verify that an error is logged
             _mockLogger.Verify(
                 logger => logger.Log(
                     LogLevel.Error,
@@ -106,10 +115,11 @@ namespace GroundStation.Tests
             );
         }
 
+        // Test case to verify that a valid command is queued correctly
         [Fact]
         public void SendCommand_ShouldQueueCommand_WhenValidCommandIsSent()
         {
-            // Arrange
+            // Arrange: Create a valid CommandPacket
             var commandPacket = new CommandPacket(
                 command: "TransmitData",
                 parameters: new Dictionary<string, string> { { "fileId", "7890" } },
@@ -117,19 +127,20 @@ namespace GroundStation.Tests
                 destination: "PayloadOps"
             );
 
-            // Act
+            // Act: Call SendCommand with the valid command packet
             _service.SendCommand(commandPacket);
 
-            // Assert that the command was enqueued
+            // Assert: Verify that the command was enqueued
             var queuedCommands = _service.GetAllCommands();
-            Assert.Single(queuedCommands);
-            Assert.Contains(commandPacket, queuedCommands);
+            Assert.Single(queuedCommands); // Ensure only one command is queued
+            Assert.Contains(commandPacket, queuedCommands); // Ensure the queued command matches the original
         }
 
+        // Test case to verify logging behavior when a command is queued
         [Fact]
         public void SendCommand_ShouldLogInformation_WhenCommandIsQueued()
         {
-            // Arrange
+            // Arrange: Create a valid CommandPacket
             var commandPacket = new CommandPacket(
                 command: "TransmitData",
                 parameters: new Dictionary<string, string> { { "fileId", "7890" } },
@@ -137,10 +148,10 @@ namespace GroundStation.Tests
                 destination: "PayloadOps"
             );
 
-            // Act
+            // Act: Call SendCommand with the valid command packet
             _service.SendCommand(commandPacket);
 
-            // Assert
+            // Assert: Verify that information is logged about the command being queued
             _mockLogger.Verify(
                 logger => logger.Log(
                     LogLevel.Information,
@@ -152,10 +163,11 @@ namespace GroundStation.Tests
             );
         }
 
+        // Test case to verify that all queued commands are returned correctly
         [Fact]
         public void GetAllCommands_ShouldReturnAllQueuedCommands()
         {
-            // Arrange
+            // Arrange: Create two valid CommandPackets
             var commandPacket1 = new CommandPacket(
                 command: "Command1",
                 parameters: new Dictionary<string, string> { { "param1", "value1" } },
@@ -170,24 +182,25 @@ namespace GroundStation.Tests
                 destination: "Destination2"
             );
 
-            // Act
+            // Act: Send both command packets
             _service.SendCommand(commandPacket1);
             _service.SendCommand(commandPacket2);
             var allCommands = _service.GetAllCommands();
 
-            // Assert
-            Assert.Equal(2, allCommands.Count());
-            Assert.Contains(commandPacket1, allCommands);
-            Assert.Contains(commandPacket2, allCommands);
+            // Assert: Verify that both commands are returned
+            Assert.Equal(2, allCommands.Count()); // Ensure two commands are returned
+            Assert.Contains(commandPacket1, allCommands); // Ensure the first command is present
+            Assert.Contains(commandPacket2, allCommands); // Ensure the second command is present
         }
 
+        // Test case to verify logging behavior when a null command packet is sent
         [Fact]
         public void SendCommand_ShouldLogError_WhenCommandPacketIsNull()
         {
-            // Act
+            // Act: Call SendCommand with a null command packet
             _service.SendCommand(null);
 
-            // Assert
+            // Assert: Verify that an error is logged for the null command packet
             _mockLoggingService.Verify(
                 logger => logger.LogInfo(It.Is<string>(s => s.Contains("Command packet is null."))),
                 Times.Once
@@ -195,17 +208,22 @@ namespace GroundStation.Tests
         }
     }
 
-        public class DownlinkCommunicationServiceTests
+    public class DownlinkCommunicationServiceTests
     {
+        // Mock logger used for capturing log messages during tests
         private readonly Mock<ILogger<DownlinkCommunicationService>> _mockLogger;
+
+        // Instance of the service being tested
         private readonly DownlinkCommunicationService _service;
 
+        // Constructor to initialize the mock logger and service
         public DownlinkCommunicationServiceTests()
         {
             _mockLogger = new Mock<ILogger<DownlinkCommunicationService>>();
             _service = new DownlinkCommunicationService(_mockLogger.Object);
         }
 
+        // Test case to verify logging behavior when a bad command packet is received
         [Fact]
         public void ReceiveCommand_ShouldLogWarning_WhenCommandPacketIsBad()
         {
@@ -227,7 +245,7 @@ namespace GroundStation.Tests
             );
         }
 
-
+        // Test case to verify that a valid command packet is enqueued
         [Fact]
         public void ReceiveCommand_ShouldEnqueueValidPacket_WhenCommandIsValid()
         {
@@ -249,6 +267,7 @@ namespace GroundStation.Tests
             );
         }
 
+        // Test case to verify that the next command is returned when the queue is not empty
         [Fact]
         public void GetNextReceivedCommand_ShouldReturnNextCommand_WhenQueueIsNotEmpty()
         {
@@ -271,7 +290,7 @@ namespace GroundStation.Tests
             Assert.Equal(commandPacket.Parameters, result?.Parameters);  // Ensure parameters match
         }
 
-
+        // Test case to verify that null is returned when the queue is empty
         [Fact]
         public void GetNextReceivedCommand_ShouldReturnNull_WhenQueueIsEmpty()
         {
@@ -293,6 +312,7 @@ namespace GroundStation.Tests
             );
         }
 
+        // Test case to verify logging behavior when a bad packet is sent to the uplink
         [Fact]
         public void SendBadPacketToUplink_ShouldLogInformation_WhenBadPacketIsSent()
         {
@@ -315,8 +335,6 @@ namespace GroundStation.Tests
                                               It.Is<Func<It.IsAnyType, Exception, string>>((v, e) => true)),
                               Times.Once);
         }
-
-
     }
 
     public class TestLogger<T> : ILogger<T>
@@ -338,123 +356,134 @@ namespace GroundStation.Tests
 
     public class DataVerificationServiceTests
     {
+        // Logger used for capturing log messages during tests
         private readonly TestLogger<DataVerificationService> _testLogger;
+
+        // Instance of the service being tested
         private readonly DataVerificationService _service;
 
+        // Constructor to initialize the logger and service
         public DataVerificationServiceTests()
         {
             _testLogger = new TestLogger<DataVerificationService>();
             _service = new DataVerificationService(_testLogger);
         }
 
+        // Test case to verify behavior when a null command packet is provided
         [Fact]
         public void VerifyCommandPacket_NullPacket_ReturnsFalse_LogsWarning()
         {
-            // Arrange
+            // Arrange: Set up a null command packet
             CommandPacket packet = null;
 
-            // Act
+            // Act: Call the method under test
             var result = _service.VerifyCommandPacket(packet);
 
-            // Assert
-            Assert.False(result);
-            Assert.Contains("Command packet is null.", _testLogger.LogMessages);
+            // Assert: Verify the expected outcome
+            Assert.False(result); // Should return false
+            Assert.Contains("Command packet is null.", _testLogger.LogMessages); // Should log a warning
         }
 
+        // Test case to verify behavior when an empty command is provided
         [Fact]
         public void VerifyCommandPacket_EmptyCommand_ReturnsFalse_LogsWarning()
         {
-            // Arrange
+            // Arrange: Set up an empty command packet
             var packet = new CommandPacket("", new Dictionary<string, string>());
 
-            // Act
+            // Act: Call the method under test
             var result = _service.VerifyCommandPacket(packet);
 
-            // Assert
-            Assert.False(result);
-            Assert.Contains("Command is null or empty.", _testLogger.LogMessages);
+            // Assert: Verify the expected outcome
+            Assert.False(result); // Should return false
+            Assert.Contains("Command is null or empty.", _testLogger.LogMessages); // Should log a warning
         }
 
+        // Test case to verify behavior when null parameters are provided
         [Fact]
         public void VerifyParameters_NullParameters_ReturnsFalse_LogsWarning()
         {
-            // Arrange
+            // Arrange: Set up a null parameters dictionary
             Dictionary<string, string> parameters = null;
 
-            // Act
+            // Act: Call the method under test
             var result = _service.VerifyParameters(parameters);
 
-            // Assert
-            Assert.False(result);
-            Assert.Contains("Parameters dictionary is null or empty.", _testLogger.LogMessages);
+            // Assert: Verify the expected outcome
+            Assert.False(result); // Should return false
+            Assert.Contains("Parameters dictionary is null or empty.", _testLogger.LogMessages); // Should log a warning
         }
 
+        // Test case to verify behavior when an empty parameters dictionary is provided
         [Fact]
         public void VerifyParameters_EmptyParameters_ReturnsFalse_LogsWarning()
         {
-            // Arrange
+            // Arrange: Set up an empty parameters dictionary
             var parameters = new Dictionary<string, string>();
 
-            // Act
+            // Act: Call the method under test
             var result = _service.VerifyParameters(parameters);
 
-            // Assert
-            Assert.False(result);
-            Assert.Contains("Parameters dictionary is null or empty.", _testLogger.LogMessages);
+            // Assert: Verify the expected outcome
+            Assert.False(result); // Should return false
+            Assert.Contains("Parameters dictionary is null or empty.", _testLogger.LogMessages); // Should log a warning
         }
 
+        // Test case to verify behavior when an invalid key is provided in parameters
         [Fact]
         public void VerifyParameters_InvalidKey_ReturnsFalse_LogsWarning()
         {
-            // Arrange
+            // Arrange: Set up parameters with an invalid key (empty string)
             var parameters = new Dictionary<string, string>
-            {
-                { "", "validValue" }
-            };
+        {
+            { "", "validValue" } // Invalid key
+        };
 
-            // Act
+            // Act: Call the method under test
             var result = _service.VerifyParameters(parameters);
 
-            // Assert
-            Assert.False(result);
-            Assert.Contains("Invalid parameter: Key='', Value='validValue'", _testLogger.LogMessages);
+            // Assert: Verify the expected outcome
+            Assert.False(result); // Should return false
+            Assert.Contains("Invalid parameter: Key='', Value='validValue'", _testLogger.LogMessages); // Should log a warning
         }
 
+        // Test case to verify behavior when an invalid value is provided in parameters
         [Fact]
         public void VerifyParameters_InvalidValue_ReturnsFalse_LogsWarning()
         {
-            // Arrange
+            // Arrange: Set up parameters with an invalid value (empty string)
             var parameters = new Dictionary<string, string>
-            {
-                { "validKey", "" }
-            };
+        {
+            { "validKey", "" } // Invalid value
+        };
 
-            // Act
+            // Act: Call the method under test
             var result = _service.VerifyParameters(parameters);
 
-            // Assert
-            Assert.False(result);
-            Assert.Contains("Invalid parameter: Key='validKey', Value=''", _testLogger.LogMessages);
+            // Assert: Verify the expected outcome
+            Assert.False(result); // Should return false
+            Assert.Contains("Invalid parameter: Key='validKey', Value=''", _testLogger.LogMessages); // Should log a warning
         }
 
+        // Test case to verify behavior when a valid command packet is provided
         [Fact]
         public void VerifyCommandPacket_ValidPacket_ReturnsTrue_LogsInformation()
         {
-            // Arrange
+            // Arrange: Set up a valid command packet
             var packet = new CommandPacket(
                 "TestCommand",
                 new Dictionary<string, string>
                 {
-                    { "param1", "value1" },
-                    { "param2", "value2" }
+                { "param1", "value1" },
+                { "param2", "value2" }
                 });
 
-            // Act
+            // Act: Call the method under test
             var result = _service.VerifyCommandPacket(packet);
 
-            // Assert
-            Assert.True(result);
-            Assert.Contains("Command packet TestCommand verified successfully.", _testLogger.LogMessages);
+            // Assert: Verify the expected outcome ```csharp
+            Assert.True(result); // Should return true
+            Assert.Contains("Command packet TestCommand verified successfully.", _testLogger.LogMessages); // Should log information
         }
     }
 }
