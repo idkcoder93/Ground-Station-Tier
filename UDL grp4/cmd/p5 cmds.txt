@@ -1,0 +1,22 @@
+
+uplink
+
+curl -X POST http://localhost:5171/api/uplink -H "Content-Type: application/json" -d "{\"command\": \"Start\", \"parameters\": {\"target\": \"Spacecraft\", \"duration\": \"60\"}}"
+
+curl -X GET "http://localhost:5171/api/uplink/commands"
+
+
+downlink
+curl -X POST http://localhost:5171/api/downlink/receive -H "Content-Type: application/json" -d "{\"command\": \"Stop\", \"parameters\": {\"target\": \"Spacecraft\", \"duration\": \"30\"}}"
+
+curl -X GET http://localhost:5171/api/downlink/commands
+
+curl -X GET http://localhost:5171/api/downlink/next
+
+bad packets 
+
+curl -X POST http://localhost:5171/api/downlink/receive -H "Content-Type: application/json" -d "{\"command\": \"BadCommand\", \"parameters\": {}}"
+
+curl -X GET http://localhost:5171/api/downlink/commands
+
+curl -X GET http://localhost:5171/api/downlink/next
