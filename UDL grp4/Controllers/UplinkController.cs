@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ground_station.Models;
 using ground_station.Services;
-using System.Collections.Generic;
 
 namespace ground_station.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class UplinkController : ControllerBase
     {
         private readonly UplinkCommunicationService _uplinkService;
@@ -17,32 +16,22 @@ namespace ground_station.Controllers
         }
 
         [HttpPost]
-        public ActionResult<ApiResponse<CommandPacket>> Post([FromBody] CommandPacket commandPacket)
+        public IActionResult Post([FromBody] CommandPacket commandPacket)
         {
-            if (commandPacket == null)
+            if (commandPacket == null || !commandPacket.IsValid)
             {
                 return BadRequest("Invalid command packet.");
             }
 
             _uplinkService.SendCommand(commandPacket);
-            return Ok(new ApiResponse<CommandPacket>
-            {
-                Success = true,
-                Data = commandPacket,
-                Message = "Command sent successfully."
-            });
+            return Ok(new { Message = "Data sent successfully." });
         }
 
-        [HttpGet("commands")]
-        public ActionResult<ApiResponse<IEnumerable<CommandPacket>>> GetCommands()
+        [HttpGet]
+        public IActionResult Get()
         {
             var commands = _uplinkService.GetAllCommands();
-            return Ok(new ApiResponse<IEnumerable<CommandPacket>>
-            {
-                Success = true,
-                Data = commands,
-                Message = "Commands retrieved successfully."
-            });
+            return Ok(commands);
         }
     }
 }
