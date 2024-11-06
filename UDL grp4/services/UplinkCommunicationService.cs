@@ -34,9 +34,9 @@ namespace ground_station.Services
                 return;
             }
 
-            if (commandPacket.Parameters == null)
+            if (commandPacket.Parameters == null || commandPacket.Parameters.Count == 0)
             {
-                _logger.LogWarning("[{CommandId}] Parameters are null for command: {Command}.", commandId, commandPacket.Command);
+                _logger.LogError("[{CommandId}] Error: Parameters cannot be null or empty.", commandId); // Updated log message
                 return;
             }
 

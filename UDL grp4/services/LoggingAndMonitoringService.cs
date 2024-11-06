@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
+
 namespace ground_station.Services
 {
     public class LoggingAndMonitoringService
@@ -12,14 +13,15 @@ namespace ground_station.Services
             _logger = logger;
         }
 
-        public void LogInfo(string message)
+        public virtual void LogInfo(string message) // Make this virtual
         {
             _logger.LogInformation(message);
         }
 
-        public void LogError(string message)
+        public virtual void LogError(string message) // Make this virtual
         {
             _logger.LogError(message);
         }
     }
 }
+

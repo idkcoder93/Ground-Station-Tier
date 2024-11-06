@@ -38,7 +38,7 @@ namespace ground_station.Services
             return true;
         }
 
-        private bool VerifyParameters(Dictionary<string, string> parameters)
+        public bool VerifyParameters(Dictionary<string, string> parameters)
         {
             if (parameters == null || parameters.Count == 0)
             {
