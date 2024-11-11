@@ -11,14 +11,13 @@ namespace CDH_GroundStation_Group6
     public class GroundStationPacketHandler
     {
         //this function makes a new packet with data we provide, like temperature and radiation levels
-        public GroundStationPacket CreatePacket(string datatype, string temperature, string radiation, string crc)
+        public GroundStationPacket CreatePacket(string datatype, string data, string crc)
         {
             //creates a new packet and fills in the fields with the data we passed in
             return new GroundStationPacket
             {
                 Datatype = datatype,            //what type of data this packet holds (like "telemetry")
-                Temperature = temperature,      //temperature data as a string (like "22°C")
-                Radiation = radiation,          //radiation level as a string (like "5mSv")
+                Data = data,                    //data content
                 CRC = crc                       //CRC (error-checking code) for data integrity
             };
         }
@@ -136,7 +135,7 @@ namespace CDH_GroundStation_Group6
             LogPacket(packet, "Received Packet");
         }
 
-        //this internal function logs any packet with a specified log type
+        //this internal function logs any packet with a specified log type  
         public void LogPacket(GroundStationPacket packet, string logType)
         {
             //convert the packet to JSON, making it easy to read in the log

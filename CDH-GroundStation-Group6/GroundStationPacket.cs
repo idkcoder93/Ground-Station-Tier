@@ -16,9 +16,8 @@ namespace CDH_GroundStation_Group6
         //type of the data (like telemetry)
         public string Datatype { get; set; }
 
-        //explicit fields for sensor data
-        public string Temperature { get; set; }        //temperature data
-        public string Radiation { get; set; }          //radiation data
+        //flexible data field that can hold any relevant information (like temperature, radiation, etc)
+        public string Data { get; set; }
 
         //CRC (aka Cyclic Redundancy Check) for error-checking as agreed
         public string CRC { get; set; }
@@ -29,8 +28,7 @@ namespace CDH_GroundStation_Group6
             //set the current time with en-US formatting
             Datetime = DateTime.Now.ToString(new CultureInfo("en-US"));
             Datatype = "telemetry";         //default to telemetry data
-            Temperature = string.Empty;     //default to an empty string
-            Radiation = string.Empty;       //default to an empty string
+            Data = string.Empty;            //default empty data
             CRC = string.Empty;             //default to an empty CRC
         }
     }
