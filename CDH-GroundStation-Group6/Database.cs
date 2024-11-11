@@ -4,7 +4,7 @@ using System;
 
 namespace CDH_GroundStation_Group6
 {
-    internal class Database
+    internal class Database : IDatabase
     {
         // Read-only class-level field
         private readonly string key = "key1234567890123"; // 16-BYTE key
@@ -30,7 +30,7 @@ namespace CDH_GroundStation_Group6
         }
 
         // Searches through Users collection to see if the results match
-        public Task<bool> SearchUserInDB(User currentUser)
+        public Task<bool> SearchUserInDB(IUser currentUser)
         {
             // Get the 'Users' collection from the database
             var userCollection = database.GetCollection<BsonDocument>("Users");

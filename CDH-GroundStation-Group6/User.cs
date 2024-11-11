@@ -2,7 +2,7 @@
 
 namespace CDH_GroundStation_Group6
 {
-    internal class User
+    internal class User: IUser
     {
         private string username;
         private string password;
