@@ -41,18 +41,17 @@
             latLabel = new Label();
             statusLabel = new Label();
             controlPanel = new Panel();
-            textBox4 = new TextBox();
+            speedInput = new TextBox();
             label5 = new Label();
-            textBox3 = new TextBox();
+            altInput = new TextBox();
             label4 = new Label();
-            textBox2 = new TextBox();
+            longInput = new TextBox();
             label3 = new Label();
             label2 = new Label();
             label1 = new Label();
-            textBox1 = new TextBox();
+            latInput = new TextBox();
             panel1 = new Panel();
-            signInButton = new Button();
-            autoRadioButton = new RadioButton();
+            sendButton = new Button();
             centreRadioButton = new RadioButton();
             satRadioButton = new RadioButton();
             visualPanel = new Panel();
@@ -72,6 +71,7 @@
             verticalProgressBar = new VerticalProgressBar();
             visualEarthPanel = new Panel();
             visualLabelSection = new Label();
+            statusCheckLabel = new Label();
             statusPanel.SuspendLayout();
             controlPanel.SuspendLayout();
             panel1.SuspendLayout();
@@ -189,7 +189,6 @@
             latLabel.Size = new Size(123, 32);
             latLabel.TabIndex = 2;
             latLabel.Text = "Lattitude:";
-            latLabel.Click += label1_Click;
             // 
             // statusLabel
             // 
@@ -205,27 +204,28 @@
             // 
             controlPanel.BackColor = Color.Silver;
             controlPanel.BorderStyle = BorderStyle.Fixed3D;
-            controlPanel.Controls.Add(textBox4);
+            controlPanel.Controls.Add(statusCheckLabel);
+            controlPanel.Controls.Add(speedInput);
             controlPanel.Controls.Add(label5);
-            controlPanel.Controls.Add(textBox3);
+            controlPanel.Controls.Add(altInput);
             controlPanel.Controls.Add(label4);
-            controlPanel.Controls.Add(textBox2);
+            controlPanel.Controls.Add(longInput);
             controlPanel.Controls.Add(label3);
             controlPanel.Controls.Add(label2);
             controlPanel.Controls.Add(label1);
-            controlPanel.Controls.Add(textBox1);
+            controlPanel.Controls.Add(latInput);
             controlPanel.Controls.Add(panel1);
             controlPanel.Location = new Point(866, 47);
             controlPanel.Name = "controlPanel";
             controlPanel.Size = new Size(651, 1573);
             controlPanel.TabIndex = 12;
             // 
-            // textBox4
+            // speedInput
             // 
-            textBox4.Location = new Point(89, 708);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(461, 39);
-            textBox4.TabIndex = 15;
+            speedInput.Location = new Point(89, 708);
+            speedInput.Name = "speedInput";
+            speedInput.Size = new Size(461, 39);
+            speedInput.TabIndex = 15;
             // 
             // label5
             // 
@@ -238,12 +238,12 @@
             label5.TabIndex = 12;
             label5.Text = "Velocity (km/h):";
             // 
-            // textBox3
+            // altInput
             // 
-            textBox3.Location = new Point(89, 531);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(461, 39);
-            textBox3.TabIndex = 14;
+            altInput.Location = new Point(89, 531);
+            altInput.Name = "altInput";
+            altInput.Size = new Size(461, 39);
+            altInput.TabIndex = 14;
             // 
             // label4
             // 
@@ -256,12 +256,12 @@
             label4.TabIndex = 12;
             label4.Text = "Altitude:";
             // 
-            // textBox2
+            // longInput
             // 
-            textBox2.Location = new Point(89, 357);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(461, 39);
-            textBox2.TabIndex = 13;
+            longInput.Location = new Point(89, 357);
+            longInput.Name = "longInput";
+            longInput.Size = new Size(461, 39);
+            longInput.TabIndex = 13;
             // 
             // label3
             // 
@@ -294,21 +294,19 @@
             label1.Size = new Size(220, 60);
             label1.TabIndex = 12;
             label1.Text = "Controls";
-            label1.Click += label1_Click_1;
             // 
-            // textBox1
+            // latInput
             // 
-            textBox1.Location = new Point(89, 204);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(461, 39);
-            textBox1.TabIndex = 3;
+            latInput.Location = new Point(89, 204);
+            latInput.Name = "latInput";
+            latInput.Size = new Size(461, 39);
+            latInput.TabIndex = 3;
             // 
             // panel1
             // 
             panel1.BackColor = Color.DarkGray;
             panel1.BorderStyle = BorderStyle.Fixed3D;
-            panel1.Controls.Add(signInButton);
-            panel1.Controls.Add(autoRadioButton);
+            panel1.Controls.Add(sendButton);
             panel1.Controls.Add(centreRadioButton);
             panel1.Controls.Add(satRadioButton);
             panel1.Location = new Point(43, 131);
@@ -316,52 +314,41 @@
             panel1.Size = new Size(552, 1033);
             panel1.TabIndex = 16;
             // 
-            // signInButton
+            // sendButton
             // 
-            signInButton.BackColor = Color.YellowGreen;
-            signInButton.FlatAppearance.BorderSize = 0;
-            signInButton.Font = new Font("Arial", 14F, FontStyle.Bold);
-            signInButton.ForeColor = Color.White;
-            signInButton.Location = new Point(143, 935);
-            signInButton.Margin = new Padding(4);
-            signInButton.Name = "signInButton";
-            signInButton.Size = new Size(260, 64);
-            signInButton.TabIndex = 13;
-            signInButton.Text = "Send";
-            signInButton.UseVisualStyleBackColor = false;
-            // 
-            // autoRadioButton
-            // 
-            autoRadioButton.AutoSize = true;
-            autoRadioButton.Location = new Point(44, 679);
-            autoRadioButton.Name = "autoRadioButton";
-            autoRadioButton.Size = new Size(150, 36);
-            autoRadioButton.TabIndex = 0;
-            autoRadioButton.TabStop = true;
-            autoRadioButton.Text = "Auto Pilot";
-            autoRadioButton.UseVisualStyleBackColor = true;
+            sendButton.BackColor = Color.YellowGreen;
+            sendButton.FlatAppearance.BorderSize = 0;
+            sendButton.Font = new Font("Arial", 14F, FontStyle.Bold);
+            sendButton.ForeColor = Color.White;
+            sendButton.Location = new Point(143, 935);
+            sendButton.Margin = new Padding(4);
+            sendButton.Name = "sendButton";
+            sendButton.Size = new Size(260, 64);
+            sendButton.TabIndex = 13;
+            sendButton.Text = "Send";
+            sendButton.UseVisualStyleBackColor = false;
+            sendButton.Click += SendButton_Click;
             // 
             // centreRadioButton
             // 
             centreRadioButton.AutoSize = true;
-            centreRadioButton.Location = new Point(301, 797);
+            centreRadioButton.Location = new Point(316, 720);
             centreRadioButton.Name = "centreRadioButton";
             centreRadioButton.Size = new Size(116, 36);
             centreRadioButton.TabIndex = 2;
-            centreRadioButton.TabStop = true;
             centreRadioButton.Text = "Centre";
             centreRadioButton.UseVisualStyleBackColor = true;
             // 
             // satRadioButton
             // 
             satRadioButton.AutoSize = true;
-            satRadioButton.Location = new Point(44, 797);
+            satRadioButton.Location = new Point(44, 720);
             satRadioButton.Name = "satRadioButton";
             satRadioButton.Size = new Size(130, 36);
             satRadioButton.TabIndex = 1;
-            satRadioButton.TabStop = true;
             satRadioButton.Text = "Satellite";
             satRadioButton.UseVisualStyleBackColor = true;
+            satRadioButton.CheckedChanged += satRadioButton_CheckedChanged;
             // 
             // visualPanel
             // 
@@ -509,7 +496,6 @@
             label6.Size = new Size(149, 32);
             label6.TabIndex = 1;
             label6.Text = "Signal Level";
-            label6.Click += label6_Click;
             // 
             // verticalProgressBar
             // 
@@ -537,6 +523,16 @@
             visualLabelSection.Size = new Size(192, 60);
             visualLabelSection.TabIndex = 17;
             visualLabelSection.Text = "Visuals";
+            // 
+            // statusCheckLabel
+            // 
+            statusCheckLabel.AutoSize = true;
+            statusCheckLabel.ForeColor = Color.Lime;
+            statusCheckLabel.Location = new Point(487, 51);
+            statusCheckLabel.Name = "statusCheckLabel";
+            statusCheckLabel.Size = new Size(85, 32);
+            statusCheckLabel.TabIndex = 17;
+            statusCheckLabel.Text = "Online";
             // 
             // Dashboard
             // 
@@ -575,18 +571,17 @@
         private Label tempLabel;
         private Panel controlPanel;
         private Label label1;
-        private TextBox textBox1;
+        private TextBox latInput;
         private RadioButton centreRadioButton;
         private RadioButton satRadioButton;
-        private RadioButton autoRadioButton;
-        private TextBox textBox4;
+        private TextBox speedInput;
         private Label label5;
-        private TextBox textBox3;
+        private TextBox altInput;
         private Label label4;
-        private TextBox textBox2;
+        private TextBox longInput;
         private Label label3;
         private Label label2;
-        private Button signInButton;
+        private Button sendButton;
         private Panel panel1;
         private Panel visualPanel;
         private Panel visualEarthPanel;
@@ -610,5 +605,6 @@
         private TextBox latencyTextBox;
         private TextBox pktTextBox;
         private TextBox bandTextBox;
+        private Label statusCheckLabel;
     }
 }

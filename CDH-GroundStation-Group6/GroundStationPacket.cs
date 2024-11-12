@@ -7,29 +7,30 @@ using System.Globalization;     //as agreed on teams, this is for en-US culture 
 
 namespace CDH_GroundStation_Group6
 {
-    //the definition of the Packet class for "REST"-based communication
     public class GroundStationPacket
     {
-        //the date and time when the packet was created or transmitted (formatted for en-US)
+        //packet properties as per the new structure
         public string Datetime { get; set; }
-
-        //type of the data (like telemetry)
-        public string Datatype { get; set; }
-
-        //flexible data field that can hold any relevant information (like temperature, radiation, etc)
-        public string Data { get; set; }
-
-        //CRC (aka Cyclic Redundancy Check) for error-checking as agreed
+        public string CommandType { get; set; }
+        public string Function { get; set; }
         public string CRC { get; set; }
 
-        //constructor to initialize the packet with default values
+        //default constructor
         public GroundStationPacket()
         {
-            //set the current time with en-US formatting
             Datetime = DateTime.Now.ToString(new CultureInfo("en-US"));
-            Datatype = "telemetry";         //default to telemetry data
-            Data = string.Empty;            //default empty data
-            CRC = string.Empty;             //default to an empty CRC
+            CommandType = string.Empty;         //initialize as empty
+            Function = string.Empty;            //initialize as empty
+            CRC = string.Empty;                 //initialize as empty
+        }
+
+        //constructor with parameters for creating a packet
+        public GroundStationPacket(string commandType, string function, string crc)
+        {
+            Datetime = DateTime.Now.ToString(new CultureInfo("en-US"));
+            CommandType = commandType;
+            Function = function;
+            CRC = crc;
         }
     }
 }

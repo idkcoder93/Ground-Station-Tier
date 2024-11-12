@@ -15,17 +15,17 @@ namespace GroundStationPayloadOpsTests
         public void TestCreatePacket()
         {
             //Arrange - setting up the data we will use to create a packet
-            string datatype = "telemetry";
-            string data = "22°C";
+            string commandType = "telemetry";
+            string function = "22°C";
             string crc = "0110";
 
             //Act - creating a packet using the handler method
-            GroundStationPacket packet = handler.CreatePacket(datatype, data, crc);
+            GroundStationPacket packet = handler.CreatePacket(commandType, function, crc);
 
             //Assert - checking if the packet properties match what we expected
             Assert.IsNotNull(packet);           //packet should not be null
-            Assert.AreEqual(datatype, packet.Datatype);         //datatype should match
-            Assert.AreEqual(data, packet.Data);                 // data should match
+            Assert.AreEqual(commandType, packet.CommandType);         //datatype should match
+            Assert.AreEqual(function, packet.Function);                 // data should match
             Assert.AreEqual(crc, packet.CRC);           //CRC should match
         }
 
@@ -33,17 +33,17 @@ namespace GroundStationPayloadOpsTests
         public void TestCreatePacketWithEdgeCaseValues()
         {
             //Arrange - setting up edge case data 
-            string datatype = null;
-            string data = "";       //use a single Data field instead of separate temperature and radiation
+            string commandType = null;
+            string function = "";
             string crc = "";
 
             //Act - creating a packet with edge case values
-            GroundStationPacket packet = handler.CreatePacket(datatype, data, crc);
+            GroundStationPacket packet = handler.CreatePacket(commandType, function, crc);
 
             //Assert - checking if the packet properties match the input or default to safe values
             Assert.IsNotNull(packet); //packet should not be null
-            Assert.AreEqual(datatype, packet.Datatype); //datatype should match input
-            Assert.AreEqual(data, packet.Data);         // data should match input
+            Assert.AreEqual(commandType, packet.CommandType); //datatype should match input
+            Assert.AreEqual(function, packet.Function);         // data should match input
             Assert.AreEqual(crc, packet.CRC); //CRC should match input
         }
 
@@ -51,16 +51,16 @@ namespace GroundStationPayloadOpsTests
         public void TestCreatePacketWithMaxLengthFields()
         {
             //Arrange - create very long strings for each field
-            string datatype = new string('A', 1000);
-            string data = new string('B', 1000);
+            string commandType = new string('A', 1000);
+            string function = new string('B', 1000);
             string crc = new string('D', 1000);
 
             //Act - create packet with maximum length values
-            GroundStationPacket packet = handler.CreatePacket(datatype, data, crc);
+            GroundStationPacket packet = handler.CreatePacket(commandType, function, crc);
 
             //Assert - check that each property was assigned the long string correctly
-            Assert.AreEqual(datatype, packet.Datatype);
-            Assert.AreEqual(data, packet.Data);
+            Assert.AreEqual(commandType, packet.CommandType);
+            Assert.AreEqual(function, packet.Function);
             Assert.AreEqual(crc, packet.CRC);
         }
 
@@ -68,16 +68,16 @@ namespace GroundStationPayloadOpsTests
         public void TestCreatePacketWithSpecialCharacters()
         {
             //Arrange - data with numbers and special characters
-            string datatype = "telemetry-1";
-            string data = "22°C, 5.5mSv";
+            string commandType = "telemetry-1";
+            string function = "22°C, 5.5mSv";
             string crc = "01@#";
 
             //Act - create packet with these values
-            GroundStationPacket packet = handler.CreatePacket(datatype, data, crc);
+            GroundStationPacket packet = handler.CreatePacket(commandType, function, crc);
 
             //Assert - verify the packet correctly assigns these values
-            Assert.AreEqual(datatype, packet.Datatype);
-            Assert.AreEqual(data, packet.Data);
+            Assert.AreEqual(commandType, packet.CommandType);
+            Assert.AreEqual(function, packet.Function);
             Assert.AreEqual(crc, packet.CRC);
         }
 
@@ -85,16 +85,16 @@ namespace GroundStationPayloadOpsTests
         public void TestCreatePacketWithWhitespaceFields()
         {
             //Arrange - whitespace in each field
-            string datatype = "   ";
-            string data = "\t ";
+            string commandType = "   ";
+            string function = "\t ";
             string crc = "\n";
 
             //Act - create packet with whitespace fields
-            GroundStationPacket packet = handler.CreatePacket(datatype, data, crc);
+            GroundStationPacket packet = handler.CreatePacket(commandType, function, crc);
 
             //Assert - check that fields remain as whitespace
-            Assert.AreEqual(datatype, packet.Datatype);
-            Assert.AreEqual(data, packet.Data);
+            Assert.AreEqual(commandType, packet.CommandType);
+            Assert.AreEqual(function, packet.Function);
             Assert.AreEqual(crc, packet.CRC);
         }
 
@@ -102,16 +102,16 @@ namespace GroundStationPayloadOpsTests
         public void TestCreatePacketWithMinimalValidData()
         {
             //Arrange - minimal non-empty data
-            string datatype = "A";
-            string data = "1";
+            string commandType = "A";
+            string function = "1";
             string crc = "1";
 
             //Act - create packet with minimal valid data
-            GroundStationPacket packet = handler.CreatePacket(datatype, data, crc);
+            GroundStationPacket packet = handler.CreatePacket(commandType, function, crc);
 
             //Assert - ensure fields are set correctly
-            Assert.AreEqual(datatype, packet.Datatype);
-            Assert.AreEqual(data, packet.Data);
+            Assert.AreEqual(commandType, packet.CommandType);
+            Assert.AreEqual(function, packet.Function);
             Assert.AreEqual(crc, packet.CRC);
         }
 
@@ -120,18 +120,18 @@ namespace GroundStationPayloadOpsTests
         public void TestSerializePacket()
         {
             //Arrange - creating a packet to test serialization
-            string datatype = "telemetry";
-            string data = "22°C, 5mSv"; // Use combined data field
+            string commandType = "telemetry";
+            string function = "22°C, 5mSv"; // Use combined data field
             string crc = "0110";
-            GroundStationPacket packet = handler.CreatePacket(datatype, data, crc);
+            GroundStationPacket packet = handler.CreatePacket(commandType, function, crc);
 
             //Act - converting the packet to JSON format
             string jsonPacket = handler.SerializePacket(packet);
 
             //Assert - check that the JSON string has all the expected data fields
             Assert.IsNotNull(jsonPacket);
-            Assert.IsTrue(jsonPacket.Contains("\"Datatype\": \"telemetry\""));      //should contain the datatype
-            Assert.IsTrue(jsonPacket.Contains("\"Data\": \"22°C, 5mSv\""));         //should contain the data field
+            Assert.IsTrue(jsonPacket.Contains("\"CommandType\": \"telemetry\""));      //should contain the datatype
+            Assert.IsTrue(jsonPacket.Contains("\"Function\": \"22°C, 5mSv\""));         //should contain the data field
             Assert.IsTrue(jsonPacket.Contains("\"CRC\": \"0110\""));                //should contain the CRC
         }
 
@@ -156,8 +156,8 @@ namespace GroundStationPayloadOpsTests
 
             //Assert - check that the JSON contains the default field values 
             Assert.IsNotNull(jsonPacket);
-            Assert.IsTrue(jsonPacket.Contains("\"Datatype\": \"telemetry\""));  //default datatype
-            Assert.IsTrue(jsonPacket.Contains("\"Data\": \"\""));              // empty data field
+            Assert.IsTrue(jsonPacket.Contains("\"CommandType\": \"telemetry\""));  //default datatype
+            Assert.IsTrue(jsonPacket.Contains("\"Function\": \"\""));              // empty data field
             Assert.IsTrue(jsonPacket.Contains("\"CRC\": \"\""));                //empty CRC
         }
 
@@ -173,8 +173,8 @@ namespace GroundStationPayloadOpsTests
 
             //Assert - check that the JSON contains the full, untruncated large data strings
             Assert.IsNotNull(jsonPacket);
-            Assert.IsTrue(jsonPacket.Contains($"\"Datatype\": \"{largeString}\""));
-            Assert.IsTrue(jsonPacket.Contains($"\"Data\": \"{largeString}\""));
+            Assert.IsTrue(jsonPacket.Contains($"\"CommandType\": \"{largeString}\""));
+            Assert.IsTrue(jsonPacket.Contains($"\"Function\": \"{largeString}\""));
             Assert.IsTrue(jsonPacket.Contains($"\"CRC\": \"{largeString}\""));
         }
 
@@ -193,8 +193,8 @@ namespace GroundStationPayloadOpsTests
 
             //Assert - check that JSON includes all special characters correctly
             Assert.IsNotNull(jsonPacket);
-            Assert.IsTrue(jsonPacket.Contains($"\"Datatype\": \"{datatype}\""));
-            Assert.IsTrue(jsonPacket.Contains($"\"Data\": \"{data}\""));
+            Assert.IsTrue(jsonPacket.Contains($"\"CommandType\": \"{datatype}\""));
+            Assert.IsTrue(jsonPacket.Contains($"\"Function\": \"{data}\""));
             Assert.IsTrue(jsonPacket.Contains($"\"CRC\": \"{crc}\""));
         }
 
@@ -203,10 +203,10 @@ namespace GroundStationPayloadOpsTests
         public void TestDepacketizeData()
         {
             //Arrange - create a packet and serialize it to JSON
-            string datatype = "telemetry";
-            string data = "22°C, 5mSv";
+            string commandType = "telemetry";
+            string function = "22°C, 5mSv";
             string crc = "0110";
-            GroundStationPacket packet = handler.CreatePacket(datatype, data, crc);
+            GroundStationPacket packet = handler.CreatePacket(commandType, function, crc);
             string jsonPacket = handler.SerializePacket(packet);
 
             //Act - convert the JSON back to a GroundStationPacket object
@@ -214,8 +214,8 @@ namespace GroundStationPayloadOpsTests
 
             //Assert - make sure the depacketized packet matches the original data
             Assert.IsNotNull(depacketizedPacket);
-            Assert.AreEqual("telemetry", depacketizedPacket.Datatype);
-            Assert.AreEqual("22°C, 5mSv", depacketizedPacket.Data);
+            Assert.AreEqual("telemetry", depacketizedPacket.CommandType);
+            Assert.AreEqual("22°C, 5mSv", depacketizedPacket.Function);
             Assert.AreEqual("0110", depacketizedPacket.CRC);
         }
 
@@ -230,8 +230,8 @@ namespace GroundStationPayloadOpsTests
 
             //Assert - check that an empty packet is returned as a fallback
             Assert.IsNotNull(packet);
-            Assert.AreEqual(string.Empty, packet.Datatype);     //default datatype
-            Assert.AreEqual(string.Empty, packet.Data);         //default data field
+            Assert.AreEqual(string.Empty, packet.CommandType);     //default datatype
+            Assert.AreEqual(string.Empty, packet.Function);         //default data field
             Assert.AreEqual(string.Empty, packet.CRC);          //default CRC
         }
 
@@ -246,8 +246,8 @@ namespace GroundStationPayloadOpsTests
 
             //Assert - check that an empty packet is returned as a fallback
             Assert.IsNotNull(packet);
-            Assert.AreEqual(string.Empty, packet.Datatype);
-            Assert.AreEqual(string.Empty, packet.Data);
+            Assert.AreEqual(string.Empty, packet.CommandType);
+            Assert.AreEqual(string.Empty, packet.Function);
             Assert.AreEqual(string.Empty, packet.CRC);
         }
 
@@ -255,15 +255,15 @@ namespace GroundStationPayloadOpsTests
         public void TestDepacketizeDataWithPartialJson()
         {
             //Arrange - JSON with only some fields present
-            string partialJson = "{ \"Datatype\": \"telemetry\", \"Data\": \"22°C\" }";
+            string partialJson = "{ \"CommandType\": \"telemetry\", \"Function\": \"22°C\" }";
 
             //Act - attempt to depacketize partial JSON
             GroundStationPacket packet = handler.DepacketizeData(partialJson);
 
             //Assert - check that missing fields are set to defaults and present fields match the JSON
             Assert.IsNotNull(packet);
-            Assert.AreEqual("telemetry", packet.Datatype);
-            Assert.AreEqual("22°C", packet.Data);
+            Assert.AreEqual("telemetry", packet.CommandType);
+            Assert.AreEqual("22°C", packet.Function);
             Assert.AreEqual(string.Empty, packet.CRC);
         }
 
@@ -272,15 +272,15 @@ namespace GroundStationPayloadOpsTests
         {
             //Arrange - JSON with very large string values
             string largeString = new string('A', 1000);
-            string largeJson = $"{{ \"Datatype\": \"{largeString}\", \"Data\": \"{largeString}\", \"CRC\": \"{largeString}\" }}";
+            string largeJson = $"{{ \"CommandType\": \"{largeString}\", \"Function\": \"{largeString}\", \"CRC\": \"{largeString}\" }}";
 
             //Act - attempt to depacketize JSON with large values
             GroundStationPacket packet = handler.DepacketizeData(largeJson);
 
             //Assert - check that each field contains the full large value
             Assert.IsNotNull(packet);
-            Assert.AreEqual(largeString, packet.Datatype);
-            Assert.AreEqual(largeString, packet.Data);
+            Assert.AreEqual(largeString, packet.CommandType);
+            Assert.AreEqual(largeString, packet.Function);
             Assert.AreEqual(largeString, packet.CRC);
         }
 
@@ -288,15 +288,15 @@ namespace GroundStationPayloadOpsTests
         public void TestDepacketizeDataWithSpecialCharacters()
         {
             //Arrange - JSON with special characters
-            string jsonWithSpecialChars = "{ \"Datatype\": \"telemetry-1\", \"Temperature\": \"22°C\", \"Radiation\": \"5.5mSv\", \"CRC\": \"01@#\" }";
+            string jsonWithSpecialChars = "{ \"CommandType\": \"telemetry-1\", \"Function\": \"22°C, 5.5mSv\", \"CRC\": \"01@#\" }";
 
             //Act - depacketize JSON with special characters
             GroundStationPacket packet = handler.DepacketizeData(jsonWithSpecialChars);
 
             //Assert - ensure that fields with special characters are deserialized correctly
             Assert.IsNotNull(packet);
-            Assert.AreEqual("telemetry-1", packet.Datatype);
-            Assert.AreEqual("22°C, 5.5mSv", packet.Data);
+            Assert.AreEqual("telemetry-1", packet.CommandType);
+            Assert.AreEqual("22°C, 5.5mSv", packet.Function);
             Assert.AreEqual("01@#", packet.CRC);
         }
 
@@ -349,8 +349,8 @@ namespace GroundStationPayloadOpsTests
                 string consoleOutput = sw.ToString();
                 Assert.IsTrue(result);                                                  //should return true for successful send
                 Assert.IsTrue(consoleOutput.Contains("Sending Packet:"));
-                Assert.IsTrue(consoleOutput.Contains("\"Datatype\": \"telemetry\""));
-                Assert.IsTrue(consoleOutput.Contains("\"Data\": \"22°C, 5mSv\""));
+                Assert.IsTrue(consoleOutput.Contains("\"CommandType\": \"telemetry\""));
+                Assert.IsTrue(consoleOutput.Contains("\"Function\": \"22°C, 5mSv\""));
                 Assert.IsTrue(consoleOutput.Contains("\"CRC\": \"0110\""));
             }
         }
@@ -409,8 +409,8 @@ namespace GroundStationPayloadOpsTests
                 //Assert - check that sending was successful and default values are in output
                 string consoleOutput = sw.ToString();
                 Assert.IsTrue(result);
-                Assert.IsTrue(consoleOutput.Contains("\"Datatype\": \"telemetry\""));       //default datatype
-                Assert.IsTrue(consoleOutput.Contains("\"Data\": \"\""));        //empty data field
+                Assert.IsTrue(consoleOutput.Contains("\"CommandType\": \"telemetry\""));       //default datatype
+                Assert.IsTrue(consoleOutput.Contains("\"Function\": \"\""));        //empty data field
                 Assert.IsTrue(consoleOutput.Contains("\"CRC\": \"\""));         //empty CRC
             }
         }
@@ -461,8 +461,8 @@ namespace GroundStationPayloadOpsTests
                 //Assert - verify console output matches expected JSON output
                 string consoleOutput = sw.ToString();
                 Assert.IsTrue(consoleOutput.Contains("Sending Packet:"));
-                Assert.IsTrue(consoleOutput.Contains("\"Datatype\": \"telemetry\""));
-                Assert.IsTrue(consoleOutput.Contains("\"Data\": \"22°C, 5mSv\""));
+                Assert.IsTrue(consoleOutput.Contains("\"CommandType\": \"telemetry\""));
+                Assert.IsTrue(consoleOutput.Contains("\"Function\": \"22°C, 5mSv\""));
                 Assert.IsTrue(consoleOutput.Contains("\"CRC\": \"0110\""));
             }
         }
@@ -671,8 +671,8 @@ namespace GroundStationPayloadOpsTests
 
                 //Assert - check that the log includes "Sent Packet" and packet details
                 Assert.IsTrue(output.Contains("Sent Packet Log"));                  //should have "Sent Packet" label
-                Assert.IsTrue(output.Contains("\"Datatype\": \"telemetry\""));      //datatype should be logged
-                Assert.IsTrue(output.Contains("\"Data\": \"22°C, 5mSv\""));         //temperature and radiation (data) should be logged
+                Assert.IsTrue(output.Contains("\"CommandType\": \"telemetry\""));      //datatype should be logged
+                Assert.IsTrue(output.Contains("\"Function\": \"22°C, 5mSv\""));         //temperature and radiation (data) should be logged
                 Assert.IsTrue(output.Contains("\"CRC\": \"0110\""));                //CRC should be logged
             }
         }
@@ -694,8 +694,8 @@ namespace GroundStationPayloadOpsTests
 
                 //Assert - check that the log includes "Received Packet" and packet details
                 Assert.IsTrue(output.Contains("Received Packet Log"));              //should have "Received Packet" label
-                Assert.IsTrue(output.Contains("\"Datatype\": \"telemetry\""));      //datatype should be logged
-                Assert.IsTrue(output.Contains("\"Data\": \"22°C, 5mSv\""));        //temperature radiation (data) should be logged
+                Assert.IsTrue(output.Contains("\"CommandType\": \"telemetry\""));      //datatype should be logged
+                Assert.IsTrue(output.Contains("\"Function\": \"22°C, 5mSv\""));        //temperature radiation (data) should be logged
                 Assert.IsTrue(output.Contains("\"CRC\": \"0110\""));                //CRC should be logged
             }
         }
@@ -775,8 +775,8 @@ namespace GroundStationPayloadOpsTests
                 //Assert - check that output includes empty fields in JSON format
                 string output = sw.ToString();
                 Assert.IsTrue(output.Contains("Empty Fields Test Log:"));
-                Assert.IsTrue(output.Contains("\"Datatype\": \"telemetry\""));      //default value for datatype
-                Assert.IsTrue(output.Contains("\"Data\": \"\""));       //empty Data field
+                Assert.IsTrue(output.Contains("\"CommandType\": \"telemetry\""));      //default value for datatype
+                Assert.IsTrue(output.Contains("\"Function\": \"\""));       //empty Data field
                 Assert.IsTrue(output.Contains("\"CRC\": \"\""));        //empty CRC
             }
         }
