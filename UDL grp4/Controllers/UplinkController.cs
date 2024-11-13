@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ground_station.Models;
 using ground_station.Services;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ground_station.Controllers
@@ -10,6 +11,14 @@ namespace ground_station.Controllers
     public class UplinkController : ControllerBase
     {
         private readonly DataForwardingService _dataForwardingService;
+
+        // Dictionary to map each destination to a specific URL
+        private readonly Dictionary<string, string> _destinationUrls = new Dictionary<string, string>
+        {
+            { "ScientificOperation", "http://localhost:/api/receive" },    // Add port number for scientific service
+            { "PayloadOps", "http://localhost:5297/api/receive" },        // add port number for pay
+            { "Spacecraft", "http://localhost:/api/receive" }                // add port number for space
+        };
 
         public UplinkController(DataForwardingService dataForwardingService)
         {
@@ -24,8 +33,12 @@ namespace ground_station.Controllers
                 return BadRequest("Invalid command packet.");
             }
 
-            // Forward the data to another service
-            var destinationUrl = "http://localhost:5297/api/receive"; // Replace with the actual URL of the destination service
+            if (string.IsNullOrEmpty(commandPacket.Destination) || !_destinationUrls.TryGetValue(commandPacket.Destination, out var destinationUrl))
+            {
+                return BadRequest("Invalid or unknown destination.");
+            }
+
+            // Forward the data to the appropriate service based on the destination
             var forwardSuccess = await _dataForwardingService.ForwardDataAsync(destinationUrl, commandPacket);
 
             if (forwardSuccess)

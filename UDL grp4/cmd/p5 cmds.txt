@@ -7,7 +7,7 @@ curl -X GET "http://localhost:5014/api/uplink/commands"
 
 
 downlink
-curl -X POST http://localhost:5014/api/downlink/receive -H "Content-Type: application/json" -d "{\"Command\": \"SomeCommand\",\"Parameters\": {\"Position\": \"X:0, Y:1, Z:3\", \"Temperature\": \"28.5\",\"Radiation\": \"1.2\", \"Velocity\": \"3.4\"}, \"Source\": \"PayloadOps\",\"Destination\": \"Spacecraft\"}"
+curl -X POST http://localhost:5014/api/downlink/receive -H "Content-Type: application/json" -d "{\"Command\": \"SomeCommand\",\"Parameters\": {\"Position\": \"X:0, Y:1, Z:3\", \"Temperature\": \"28.5\",\"Radiation\": \"1.2\", \"Velocity\": \"3.4\"}, \"Source\": \"Spacecraft\",\"Destination\": \"Payload\"}"
 
 
 curl -X GET http://localhost:5014/api/downlink/commands
