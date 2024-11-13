@@ -16,7 +16,7 @@ namespace ground_station.Controllers
         private readonly Dictionary<string, string> _destinationUrls = new Dictionary<string, string>
         {
             { "ScientificOperation", "http://localhost:/api/receive" },    // Add port number for scientific service
-            { "PayloadOps", "http://localhost:5297/api/receive" },        // add port number for pay
+            { "PayloadOps", "http://localhost:5296/api/receive" },        // add port number for pay
             { "Spacecraft", "http://localhost:/api/receive" }                // add port number for space
         };
 

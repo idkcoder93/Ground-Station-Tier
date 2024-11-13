@@ -1,9 +1,9 @@
-﻿using System;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
 
 namespace ground_station.Services
 {
@@ -20,6 +20,19 @@ namespace ground_station.Services
 
         public async Task<bool> ForwardDataAsync(string destinationUrl, object data)
         {
+            // Validate input parameters
+            if (string.IsNullOrWhiteSpace(destinationUrl))
+            {
+                _logger.LogError("Destination URL cannot be null or empty.");
+                return false;
+            }
+
+            if (data == null)
+            {
+                _logger.LogError("Data cannot be null.");
+                return false;
+            }
+
             try
             {
                 var jsonData = JsonSerializer.Serialize(data);
@@ -37,6 +50,11 @@ namespace ground_station.Services
                     _logger.LogError($"Failed to forward data to {destinationUrl}. Status code: {response.StatusCode}");
                     return false;
                 }
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError($"HTTP request failed while forwarding data to {destinationUrl}: {ex.Message}");
+                return false;
             }
             catch (Exception ex)
             {
