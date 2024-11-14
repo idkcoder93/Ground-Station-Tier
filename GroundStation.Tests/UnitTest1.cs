@@ -494,21 +494,25 @@ namespace GroundStation.Tests
         }
     }
 
+    // MockHttpMessageHandler simulates HTTP responses for testing
     public class MockHttpMessageHandler : HttpMessageHandler
     {
         private readonly HttpResponseMessage _responseMessage;
         private readonly Exception _exceptionToThrow;
 
+        // Constructor for returning a predefined response
         public MockHttpMessageHandler(HttpResponseMessage responseMessage)
         {
             _responseMessage = responseMessage;
         }
 
+        // Constructor for simulating an exception
         public MockHttpMessageHandler(Exception exceptionToThrow)
         {
             _exceptionToThrow = exceptionToThrow;
         }
 
+        // Override SendAsync to return the predefined response or throw an exception
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (_exceptionToThrow != null)
@@ -524,6 +528,7 @@ namespace GroundStation.Tests
     {
         private readonly Mock<ILogger<DataForwardingService>> _loggerMock;
 
+        // Constructor to initialize the mock logger
         public DataForwardingServiceTests()
         {
             _loggerMock = new Mock<ILogger<DataForwardingService>>();
@@ -533,129 +538,129 @@ namespace GroundStation.Tests
         public async Task ForwardDataAsync_ValidInput_ReturnsTrue()
         {
             // Arrange
-            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK); // Simulate a successful response
             var handler = new MockHttpMessageHandler(responseMessage);
             var httpClient = new HttpClient(handler);
-            var service = new DataForwardingService(httpClient, _loggerMock.Object);
-            var destinationUrl = "http://localhost:5297/api/receive";
-            var data = new { Name = "Test" };
+            var service = new DataForwardingService(httpClient, _loggerMock.Object); // Create service with mock logger
+            var destinationUrl = "http://localhost:5297/api/receive"; // Valid URL
+            var data = new { Name = "Test" }; // Sample data
 
             // Act
-            var result = await service.ForwardDataAsync(destinationUrl, data);
+            var result = await service.ForwardDataAsync(destinationUrl, data); // Call the method
 
             // Assert
-            Assert.True(result);
+            Assert.True(result); // Expect the result to be true
         }
 
         [Fact]
         public async Task ForwardDataAsync_InvalidUrl_ReturnsFalse()
         {
             // Arrange
-            var service = new DataForwardingService(new HttpClient(), _loggerMock.Object);
+            var service = new DataForwardingService(new HttpClient(), _loggerMock.Object); // Create service with mock logger
             var destinationUrl = ""; // Invalid URL
-            var data = new { Name = "Test" };
+            var data = new { Name = "Test" }; // Sample data
 
             // Act
-            var result = await service.ForwardDataAsync(destinationUrl, data);
+            var result = await service.ForwardDataAsync(destinationUrl, data); // Call the method
 
             // Assert
-            Assert.False(result);
+            Assert.False(result); // Expect the result to be false
         }
 
         [Fact]
         public async Task ForwardDataAsync_NullData_ReturnsFalse()
         {
             // Arrange
-            var service = new DataForwardingService(new HttpClient(), _loggerMock.Object);
+            var service = new DataForwardingService(new HttpClient(), _loggerMock.Object); // Create service with mock logger
             var destinationUrl = "http://localhost:5297/api/receive"; // Valid URL
 
             // Act
-            var result = await service.ForwardDataAsync(destinationUrl, null); // Null data
+            var result = await service.ForwardDataAsync(destinationUrl, null); // Call the method with null data
 
             // Assert
-            Assert.False(result);
+            Assert.False(result); // Expect the result to be false
         }
 
         [Fact]
         public async Task ForwardDataAsync_ServerNotRunning_ReturnsFalse()
         {
             // Arrange
-            var handler = new MockHttpMessageHandler(new HttpRequestException("Server not reachable"));
+            var handler = new MockHttpMessageHandler(new HttpRequestException("Server not reachable")); // Simulate server not reachable
             var httpClient = new HttpClient(handler);
-            var service = new DataForwardingService(httpClient, _loggerMock.Object);
-            var destinationUrl = "http://localhost:5297/api/receive"; // Assume server is not running
+            var service = new DataForwardingService(httpClient, _loggerMock.Object); // Create service with mock logger
+            var destinationUrl = "http://localhost:5297/api/receive"; // Valid URL
 
             // Act
-            var result = await service.ForwardDataAsync(destinationUrl, new { Name = "Test" });
+            var result = await service.ForwardDataAsync(destinationUrl, new { Name = "Test" }); // Call the method
 
             // Assert
-            Assert.False(result);
+            Assert.False(result); // Expect the result to be false
         }
 
         [Fact]
         public async Task ForwardDataAsync_HttpErrorResponse_4xx_ReturnsFalse()
         {
             // Arrange
-            var responseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest);
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest); // Simulate a 4xx error response
             var handler = new MockHttpMessageHandler(responseMessage);
             var httpClient = new HttpClient(handler);
-            var service = new DataForwardingService(httpClient, _loggerMock.Object);
-            var destinationUrl = "http://localhost:5297/api/receive";
+            var service = new DataForwardingService(httpClient, _loggerMock.Object); // Create service with mock logger
+            var destinationUrl = "http://localhost:5297/api/receive"; // Valid URL
 
             // Act
-            var result = await service.ForwardDataAsync(destinationUrl, new { Name = "Test" });
+            var result = await service.ForwardDataAsync(destinationUrl, new { Name = "Test" }); // Call the method
 
             // Assert
-            Assert.False(result);
+            Assert.False(result); // Expect the result to be false
         }
 
         [Fact]
         public async Task ForwardDataAsync_HttpErrorResponse_5xx_ReturnsFalse()
         {
             // Arrange
-            var responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError); // Simulate a 5xx error response
             var handler = new MockHttpMessageHandler(responseMessage);
             var httpClient = new HttpClient(handler);
-            var service = new DataForwardingService(httpClient, _loggerMock.Object);
+            var service = new DataForwardingService(httpClient, _loggerMock.Object); // Create service with mock logger
             var destinationUrl = "http://localhost:5297/api/receive"; // Valid URL for the test
-            var data = new { Name = "Test" };
+            var data = new { Name = "Test" }; // Sample data
 
             // Act
-            var result = await service.ForwardDataAsync(destinationUrl, data);
+            var result = await service.ForwardDataAsync(destinationUrl, data); // Call the method
 
             // Assert
-            Assert.False(result);
+            Assert.False(result); // Expect the result to be false
         }
 
         [Fact]
         public async Task ForwardDataAsync_NetworkException_ReturnsFalse()
         {
             // Arrange
-            var handler = new MockHttpMessageHandler(new HttpRequestException("Network error"));
+            var handler = new MockHttpMessageHandler(new HttpRequestException("Network error")); // Simulate a network error
             var httpClient = new HttpClient(handler);
-            var service = new DataForwardingService(httpClient, _loggerMock.Object);
+            var service = new DataForwardingService(httpClient, _loggerMock.Object); // Create service with mock logger
             var destinationUrl = "http://localhost:5297/api/receive"; // Valid URL for the test
-            var data = new { Name = "Test" };
+            var data = new { Name = "Test" }; // Sample data
 
             // Act
-            var result = await service.ForwardDataAsync(destinationUrl, data);
+            var result = await service.ForwardDataAsync(destinationUrl, data); // Call the method
 
             // Assert
-            Assert.False(result);
+            Assert.False(result); // Expect the result to be false
         }
 
         [Fact]
         public async Task ForwardDataAsync_SerializationException_ReturnsFalse()
         {
             // Arrange
-            var service = new DataForwardingService(new HttpClient(), _loggerMock.Object);
-            var destinationUrl = "http://localhost:5297/api/receive"; // Data that causes serialization issues
+            var service = new DataForwardingService(new HttpClient(), _loggerMock.Object); // Create service with mock logger
+            var destinationUrl = "http://localhost:5297/api/receive"; // Valid URL for the test
 
             // Act
             var result = await service.ForwardDataAsync(destinationUrl, new { CircularReference = new { } }); // Example of circular reference
 
             // Assert
-            Assert.False(result);
+            Assert.False(result); // Expect the result to be false
         }
     }
 }
