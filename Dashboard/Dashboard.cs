@@ -2,7 +2,6 @@ namespace Dashboard
 {
     public partial class Dashboard : Form
     {
-        Destination Destination;
         public Dashboard()
         {
             InitializeComponent();
@@ -16,25 +15,38 @@ namespace Dashboard
 
             // capture all the inputs for commands
             command.CommandType = ""; // no input for this
-            command.Latitude = Convert.ToDouble(latInput.Text);
-            command.Longitude = Convert.ToDouble(longInput.Text);
-            command.Altitude = Convert.ToDouble(altInput.Text);
-            command.Speed = Convert.ToDouble(speedInput.Text);
+            command.Latitude = Convert.ToDouble(latInput.Text); // idk why I converted this thasn fml
+            command.Longitude = Convert.ToDouble(longInput.Text); // idk why I converted this thasn fml
+            command.Altitude = Convert.ToDouble(altInput.Text); // idk why I converted this thasn fml
+            command.Speed = Convert.ToDouble(speedInput.Text); // idk why I converted this thasn fml
 
             if (!this.IsDisposed)
             {
                 status.StatusState = "ONLINE";
             }
+            
+            string function = latInput.Text + "," + longInput.Text + "," + altInput.Text + "," + speedInput.Text;
 
-            // Validate destination selection
-            if (ValidateDestinationSelection(destination))
+
+
+            // initiailizing packet and handler
+            GroundStationPacketHandler handler = new GroundStationPacketHandler();
+            GroundStationPacket currentPacket = handler.CreatePacket(command.CommandType, function, "");
+
+            // Converting to JSON
+            string jsonPacket = handler.SerializePacket(currentPacket);
+
+            // Displaying JSON in consoleTextBox
+            if (handler.SendPacket(currentPacket))
             {
-                // Packetize data (PAYLOAD OPS CODE HERE)
-                // Send packet over network (Uplink/Downlink CODE HERE)
-
-                MessageBox.Show("Command has been sent", "", MessageBoxButtons.OK);
-                ClearCommandInputs();
+                consoleTextBox.AppendText("Packet sent:\n" + jsonPacket + "\n");
             }
+            else
+            {
+                consoleTextBox.AppendText("Error");
+            }
+
+            // now uplink/downlink will need to sent packet
 
             ClearCommandInputs();
         }

@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;      //this lets us convert (serialize) the packet data to JSON format
 
-namespace CDH_GroundStation_Group6
+namespace Dashboard
 {
     //this class handles everything related to our Ground Station packets - creating, sending, and logging them
     public class GroundStationPacketHandler
     {
         //this function makes a new packet with data we provide, like temperature and radiation levels
-        public static GroundStationPacket CreatePacket(string commandType, string function, string crc)
+        public GroundStationPacket CreatePacket(string commandType, string function, string crc)
         {
             return new GroundStationPacket
             {
@@ -22,7 +22,7 @@ namespace CDH_GroundStation_Group6
         }
 
         //this function takes our packet and turns it into JSON format (a format easy for transmission)
-        public static string SerializePacket(GroundStationPacket packet)
+        public string SerializePacket(GroundStationPacket packet)
         {
             //converts the packet object to a formatted JSON string
             return JsonConvert.SerializeObject(packet, Formatting.Indented);
