@@ -2,7 +2,6 @@ namespace Dashboard
 {
     public partial class Dashboard : Form
     {
-        Destination Destination;
         public Dashboard()
         {
             InitializeComponent();
@@ -15,7 +14,7 @@ namespace Dashboard
             Destination destination = new Destination();
 
             // capture all the inputs for commands
-            command.CommandType = ""; // no input for this
+            command.CommandType = commandInput.Text;
             command.Latitude = Convert.ToDouble(latInput.Text);
             command.Longitude = Convert.ToDouble(longInput.Text);
             command.Altitude = Convert.ToDouble(altInput.Text);
@@ -27,26 +26,38 @@ namespace Dashboard
             }
 
             // Validate destination selection
-            if (ValidateDestinationSelection(destination))
-            {
-                // Packetize data (PAYLOAD OPS CODE HERE)
-                // Send packet over network (Uplink/Downlink CODE HERE)
+            ValidateDestinationSelection(destination);
 
-                MessageBox.Show("Command has been sent", "", MessageBoxButtons.OK);
-                ClearCommandInputs();
+            string function = latInput.Text + "," + longInput.Text + "," + altInput.Text + "," + speedInput.Text;
+
+
+
+            // initiailizing packet and handler
+            GroundStationPacketHandler handler = new GroundStationPacketHandler();
+            GroundStationPacket currentPacket = handler.CreatePacket(command.CommandType, function, "");
+
+            // Converting to JSON
+            string jsonPacket = handler.SerializePacket(currentPacket);
+
+            // Displaying JSON in consoleTextBox
+            if (handler.SendPacket(currentPacket))
+            {
+                consoleTextBox.AppendText("Packet sent:\n" + jsonPacket + "\n");
             }
+            else
+            {
+                consoleTextBox.AppendText("Error");
+            }
+
+            // now uplink/downlink will need to sent packet
+
 
             ClearCommandInputs();
         }
 
-        private bool ValidateDestinationSelection(Destination destination)
+        private void ValidateDestinationSelection(Destination destination)
         {
-            if (satRadioButton.Checked && centreRadioButton.Checked)
-            {
-                MessageBox.Show("An error has occurred.", "Both boxes cannot be selected", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-            else if (satRadioButton.Checked)
+            if (satRadioButton.Checked)
             {
                 destination.DestinationInfo = "SATELLITE";
             }
@@ -57,9 +68,7 @@ namespace Dashboard
             else
             {
                 MessageBox.Show("Please select a destination.", "Destination Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
             }
-            return true;
         }
 
         private void consoleTextBox_TextChanged(object sender, EventArgs e)
@@ -69,6 +78,7 @@ namespace Dashboard
 
         private void ClearCommandInputs()
         {
+            commandInput.Clear();
             latInput.Clear();
             longInput.Clear();
             altInput.Clear();

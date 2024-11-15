@@ -41,6 +41,7 @@
             latLabel = new Label();
             statusLabel = new Label();
             controlPanel = new Panel();
+            statusCheckLabel = new Label();
             speedInput = new TextBox();
             label5 = new Label();
             altInput = new TextBox();
@@ -71,7 +72,8 @@
             verticalProgressBar = new VerticalProgressBar();
             visualEarthPanel = new Panel();
             visualLabelSection = new Label();
-            statusCheckLabel = new Label();
+            commandInput = new TextBox();
+            commandLabel = new Label();
             statusPanel.SuspendLayout();
             controlPanel.SuspendLayout();
             panel1.SuspendLayout();
@@ -205,24 +207,26 @@
             controlPanel.BackColor = Color.Silver;
             controlPanel.BorderStyle = BorderStyle.Fixed3D;
             controlPanel.Controls.Add(statusCheckLabel);
-            controlPanel.Controls.Add(speedInput);
-            controlPanel.Controls.Add(label5);
-            controlPanel.Controls.Add(altInput);
-            controlPanel.Controls.Add(label4);
-            controlPanel.Controls.Add(longInput);
-            controlPanel.Controls.Add(label3);
-            controlPanel.Controls.Add(label2);
             controlPanel.Controls.Add(label1);
-            controlPanel.Controls.Add(latInput);
             controlPanel.Controls.Add(panel1);
             controlPanel.Location = new Point(866, 47);
             controlPanel.Name = "controlPanel";
             controlPanel.Size = new Size(651, 1573);
             controlPanel.TabIndex = 12;
             // 
+            // statusCheckLabel
+            // 
+            statusCheckLabel.AutoSize = true;
+            statusCheckLabel.ForeColor = Color.Lime;
+            statusCheckLabel.Location = new Point(487, 51);
+            statusCheckLabel.Name = "statusCheckLabel";
+            statusCheckLabel.Size = new Size(85, 32);
+            statusCheckLabel.TabIndex = 17;
+            statusCheckLabel.Text = "Online";
+            // 
             // speedInput
             // 
-            speedInput.Location = new Point(89, 708);
+            speedInput.Location = new Point(38, 707);
             speedInput.Name = "speedInput";
             speedInput.Size = new Size(461, 39);
             speedInput.TabIndex = 15;
@@ -232,7 +236,7 @@
             label5.AutoSize = true;
             label5.BackColor = Color.DarkGray;
             label5.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label5.Location = new Point(89, 649);
+            label5.Location = new Point(38, 648);
             label5.Name = "label5";
             label5.Size = new Size(196, 32);
             label5.TabIndex = 12;
@@ -240,7 +244,7 @@
             // 
             // altInput
             // 
-            altInput.Location = new Point(89, 531);
+            altInput.Location = new Point(38, 530);
             altInput.Name = "altInput";
             altInput.Size = new Size(461, 39);
             altInput.TabIndex = 14;
@@ -250,7 +254,7 @@
             label4.AutoSize = true;
             label4.BackColor = Color.DarkGray;
             label4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label4.Location = new Point(89, 475);
+            label4.Location = new Point(38, 474);
             label4.Name = "label4";
             label4.Size = new Size(113, 32);
             label4.TabIndex = 12;
@@ -258,7 +262,7 @@
             // 
             // longInput
             // 
-            longInput.Location = new Point(89, 357);
+            longInput.Location = new Point(38, 356);
             longInput.Name = "longInput";
             longInput.Size = new Size(461, 39);
             longInput.TabIndex = 13;
@@ -268,7 +272,7 @@
             label3.AutoSize = true;
             label3.BackColor = Color.DarkGray;
             label3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label3.Location = new Point(89, 306);
+            label3.Location = new Point(38, 305);
             label3.Name = "label3";
             label3.Size = new Size(146, 32);
             label3.TabIndex = 12;
@@ -279,7 +283,7 @@
             label2.AutoSize = true;
             label2.BackColor = Color.DarkGray;
             label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label2.Location = new Point(89, 159);
+            label2.Location = new Point(38, 158);
             label2.Name = "label2";
             label2.Size = new Size(123, 32);
             label2.TabIndex = 12;
@@ -297,7 +301,7 @@
             // 
             // latInput
             // 
-            latInput.Location = new Point(89, 204);
+            latInput.Location = new Point(38, 203);
             latInput.Name = "latInput";
             latInput.Size = new Size(461, 39);
             latInput.TabIndex = 3;
@@ -306,12 +310,22 @@
             // 
             panel1.BackColor = Color.DarkGray;
             panel1.BorderStyle = BorderStyle.Fixed3D;
+            panel1.Controls.Add(commandLabel);
+            panel1.Controls.Add(commandInput);
             panel1.Controls.Add(sendButton);
+            panel1.Controls.Add(speedInput);
             panel1.Controls.Add(centreRadioButton);
+            panel1.Controls.Add(label5);
             panel1.Controls.Add(satRadioButton);
+            panel1.Controls.Add(altInput);
+            panel1.Controls.Add(label2);
+            panel1.Controls.Add(label4);
+            panel1.Controls.Add(latInput);
+            panel1.Controls.Add(longInput);
+            panel1.Controls.Add(label3);
             panel1.Location = new Point(43, 131);
             panel1.Name = "panel1";
-            panel1.Size = new Size(552, 1033);
+            panel1.Size = new Size(552, 1157);
             panel1.TabIndex = 16;
             // 
             // sendButton
@@ -320,7 +334,7 @@
             sendButton.FlatAppearance.BorderSize = 0;
             sendButton.Font = new Font("Arial", 14F, FontStyle.Bold);
             sendButton.ForeColor = Color.White;
-            sendButton.Location = new Point(143, 935);
+            sendButton.Location = new Point(141, 1026);
             sendButton.Margin = new Padding(4);
             sendButton.Name = "sendButton";
             sendButton.Size = new Size(260, 64);
@@ -332,7 +346,7 @@
             // centreRadioButton
             // 
             centreRadioButton.AutoSize = true;
-            centreRadioButton.Location = new Point(316, 720);
+            centreRadioButton.Location = new Point(285, 842);
             centreRadioButton.Name = "centreRadioButton";
             centreRadioButton.Size = new Size(116, 36);
             centreRadioButton.TabIndex = 2;
@@ -342,7 +356,7 @@
             // satRadioButton
             // 
             satRadioButton.AutoSize = true;
-            satRadioButton.Location = new Point(44, 720);
+            satRadioButton.Location = new Point(38, 841);
             satRadioButton.Name = "satRadioButton";
             satRadioButton.Size = new Size(130, 36);
             satRadioButton.TabIndex = 1;
@@ -524,15 +538,23 @@
             visualLabelSection.TabIndex = 17;
             visualLabelSection.Text = "Visuals";
             // 
-            // statusCheckLabel
+            // commandInput
             // 
-            statusCheckLabel.AutoSize = true;
-            statusCheckLabel.ForeColor = Color.Lime;
-            statusCheckLabel.Location = new Point(487, 51);
-            statusCheckLabel.Name = "statusCheckLabel";
-            statusCheckLabel.Size = new Size(85, 32);
-            statusCheckLabel.TabIndex = 17;
-            statusCheckLabel.Text = "Online";
+            commandInput.Location = new Point(38, 71);
+            commandInput.Name = "commandInput";
+            commandInput.Size = new Size(461, 39);
+            commandInput.TabIndex = 16;
+            // 
+            // commandLabel
+            // 
+            commandLabel.AutoSize = true;
+            commandLabel.BackColor = Color.DarkGray;
+            commandLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            commandLabel.Location = new Point(38, 36);
+            commandLabel.Name = "commandLabel";
+            commandLabel.Size = new Size(138, 32);
+            commandLabel.TabIndex = 17;
+            commandLabel.Text = "Command:";
             // 
             // Dashboard
             // 
@@ -606,5 +628,7 @@
         private TextBox pktTextBox;
         private TextBox bandTextBox;
         private Label statusCheckLabel;
+        private Label commandLabel;
+        private TextBox commandInput;
     }
 }
