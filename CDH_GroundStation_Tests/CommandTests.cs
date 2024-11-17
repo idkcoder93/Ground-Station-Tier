@@ -190,5 +190,66 @@ namespace Dashboard_Tests
             // Assert
             Assert.AreEqual(altitude, command.Altitude, "Altitude should accept negative values like -100.");
         }
+        [TestMethod]
+        public void TestSetAllPropertiesSimultaneously()
+        {
+            // Arrange
+            string commandType = "LANDING";
+            double speed = 500.5;
+            double latitude = 25.0;
+            double longitude = 135.0;
+            double altitude = 10000.0;
+
+            // Act
+            command.CommandType = commandType;
+            command.Speed = speed;
+            command.Latitude = latitude;
+            command.Longitude = longitude;
+            command.Altitude = altitude;
+
+            // Assert
+            Assert.AreEqual(commandType, command.CommandType, "CommandType should be set to 'LANDING'.");
+            Assert.AreEqual(speed, command.Speed, "Speed should be set to 500.5.");
+            Assert.AreEqual(latitude, command.Latitude, "Latitude should be set to 25.0.");
+            Assert.AreEqual(longitude, command.Longitude, "Longitude should be set to 135.0.");
+            Assert.AreEqual(altitude, command.Altitude, "Altitude should be set to 10000.");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        // Advanced test cases-----
+        public void ADV_TestSetLatitude_OutOfBounds_ThrowsException()
+        {
+            // Arrange
+            double invalidLatitude = 95.0; // Latitude should be between -90 and 90
+
+            // Act
+            command.Latitude = invalidLatitude; // This should throw an exception
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void ADV_TestSetLongitude_OutOfBounds_ThrowsException()
+        {
+            // Arrange
+            double invalidLongitude = 200.0; // Longitude should be between -180 and 180
+
+            // Act
+            command.Longitude = invalidLongitude; // This should throw an exception
+        }
+
+        [TestMethod]
+        public void ADV_TestSetAltitude_MaximumValue()
+        {
+            // Arrange
+            double maxAltitude = double.MaxValue; // Set to the largest possible double value
+
+            // Act
+            command.Altitude = maxAltitude;
+
+            // Assert
+            Assert.AreEqual(maxAltitude, command.Altitude, "Altitude should accept the maximum possible value.");
+        }
+
     }
 }

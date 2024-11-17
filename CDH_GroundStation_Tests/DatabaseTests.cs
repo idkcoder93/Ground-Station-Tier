@@ -127,5 +127,118 @@ namespace CDH_GroundStation_Tests
             // Assert
             Assert.IsTrue(result, "Expected to handle special characters in username.");
         }
+
+
+        // ADVANCED TEST CASES 
+        [TestMethod]
+        public async Task ADV_SearchUser_DBNull_ReturnsFalse()
+        {
+            // Arrange
+            mockDatabase.Setup(db => db.SearchUserInDB(It.IsAny<IUser>())).ReturnsAsync(false);
+
+            // Act
+            bool result = await mockDatabase.Object.SearchUserInDB(null);
+
+            // Assert
+            Assert.IsFalse(result, "Expected to return false when the user object is null.");
+        }
+
+        [TestMethod]
+        public async Task ADV_SearchUser_LongUsername_ReturnsFalse()
+        {
+            // Arrange
+            string longUsername = new string('a', 256); // 256 characters
+            testUser.Setup(u => u.Username).Returns(longUsername);
+            testUser.Setup(u => u.Password).Returns("validPassword");
+            mockDatabase.Setup(db => db.SearchUserInDB(It.IsAny<IUser>())).ReturnsAsync(false);
+
+            // Act
+            bool result = await mockDatabase.Object.SearchUserInDB(testUser.Object);
+
+            // Assert
+            Assert.IsFalse(result, "Expected to return false for a username longer than allowed.");
+        }
+
+        [TestMethod]
+        public async Task ADV_SearchUser_CaseSensitiveUsername_ReturnsCorrectResult()
+        {
+            // Arrange
+            testUser.Setup(u => u.Username).Returns("CaseSensitiveUser");
+            testUser.Setup(u => u.Password).Returns("correctPassword");
+            mockDatabase.Setup(db => db.SearchUserInDB(It.Is<IUser>(user => user.Username == "CaseSensitiveUser"))).ReturnsAsync(true);
+
+            // Act
+            bool result = await mockDatabase.Object.SearchUserInDB(testUser.Object);
+
+            // Assert
+            Assert.IsTrue(result, "Expected to correctly handle case-sensitive usernames.");
+        }
+
+        [TestMethod]
+        public async Task ADV_SearchUser_WhitespaceInCredentials_ReturnsFalse()
+        {
+            // Arrange
+            testUser.Setup(u => u.Username).Returns("   "); // Only whitespace
+            testUser.Setup(u => u.Password).Returns("   ");
+            mockDatabase.Setup(db => db.SearchUserInDB(It.IsAny<IUser>())).ReturnsAsync(false);
+
+            // Act
+            bool result = await mockDatabase.Object.SearchUserInDB(testUser.Object);
+
+            // Assert
+            Assert.IsFalse(result, "Expected to return false for credentials with only whitespace.");
+        }
+
+        [TestMethod]
+        public async Task ADV_SearchUser_InvalidCharacterEncoding_ReturnsFalse()
+        {
+            // Arrange
+            testUser.Setup(u => u.Username).Returns("用户名"); // Unicode characters
+            testUser.Setup(u => u.Password).Returns("密码");
+            mockDatabase.Setup(db => db.SearchUserInDB(It.IsAny<IUser>())).ReturnsAsync(false);
+
+            // Act
+            bool result = await mockDatabase.Object.SearchUserInDB(testUser.Object);
+
+            // Assert
+            Assert.IsFalse(result, "Expected to return false for invalid character encoding in credentials.");
+        }
+
+        [TestMethod]
+        public async Task ADV_SearchUser_SimultaneousCalls()
+        {
+            // Arrange
+            testUser.Setup(u => u.Username).Returns("simultaneousUser");
+            testUser.Setup(u => u.Password).Returns("correctPassword");
+            mockDatabase.Setup(db => db.SearchUserInDB(It.IsAny<IUser>())).ReturnsAsync(true);
+
+            // Act
+            var tasks = new[]
+            {
+        mockDatabase.Object.SearchUserInDB(testUser.Object),
+        mockDatabase.Object.SearchUserInDB(testUser.Object),
+        mockDatabase.Object.SearchUserInDB(testUser.Object)
+    };
+            var results = await Task.WhenAll(tasks);
+
+            // Assert
+            Assert.IsTrue(results.All(result => result), "Expected all simultaneous calls to return true.");
+        }
+
+        [TestMethod]
+        public async Task ADV_SearchUser_SQLInjection_ReturnsFalse()
+        {
+            // Arrange
+            testUser.Setup(u => u.Username).Returns("' OR 1=1; --");
+            testUser.Setup(u => u.Password).Returns("irrelevant");
+            mockDatabase.Setup(db => db.SearchUserInDB(It.IsAny<IUser>())).ReturnsAsync(false);
+
+            // Act
+            bool result = await mockDatabase.Object.SearchUserInDB(testUser.Object);
+
+            // Assert
+            Assert.IsFalse(result, "Expected the database to handle SQL injection attempts securely.");
+        }
+
     }
 }

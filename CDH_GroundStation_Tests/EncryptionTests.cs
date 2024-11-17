@@ -181,6 +181,153 @@ namespace CDH_GroundStation_Tests
             Encrpytion.Encrypt(plainText, emptyKey); // This should throw
         }
 
+        // Advanced Test Cases for covering wide range of encryption techniques
+        [TestMethod]
+        public void TestEncryptionDecryption_UnicodeCharacters()
+        {
+            // Arrange
+            string plainText = "你好，世界! 🌍🚀"; // Contains Unicode characters
+
+            // Act
+            string encryptedText = Encrpytion.Encrypt(plainText, key);
+            string decryptedText = Encrpytion.Decrypt(encryptedText, key);
+
+            // Assert
+            Assert.AreEqual(plainText, decryptedText, "Decrypted text with Unicode characters should match the original plain text.");
+        }
+
+        [TestMethod]
+        public void TestEncryptionPerformance_LargeInput()
+        {
+            // Arrange
+            string plainText = new string('B', 10_000_000); // 10 MB of data
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            // Act
+            string encryptedText = Encrpytion.Encrypt(plainText, key);
+            stopwatch.Stop();
+            long encryptionTime = stopwatch.ElapsedMilliseconds;
+
+            // Assert
+            Assert.IsTrue(encryptionTime < 1000, $"Encryption should complete in under 1 second. Took: {encryptionTime}ms");
+        }
+
+        [TestMethod]
+        public void ADV_TestDecryptionPerformance_LargeInput()
+        {
+            // Arrange
+            string plainText = new string('B', 10_000_000); // 10 MB of data
+            string encryptedText = Encrpytion.Encrypt(plainText, key);
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            // Act
+            string decryptedText = Encrpytion.Decrypt(encryptedText, key);
+            stopwatch.Stop();
+            long decryptionTime = stopwatch.ElapsedMilliseconds;
+
+            // Assert
+            Assert.AreEqual(plainText, decryptedText, "Decrypted text should match the original large plain text.");
+            Assert.IsTrue(decryptionTime < 1000, $"Decryption should complete in under 1 second. Took: {decryptionTime}ms");
+        }
+
+        [TestMethod]
+        public void ADV_TestEncryptionDecryption_WhitespaceOnly()
+        {
+            // Arrange
+            string plainText = "     "; // Only spaces
+
+            // Act
+            string encryptedText = Encrpytion.Encrypt(plainText, key);
+            string decryptedText = Encrpytion.Decrypt(encryptedText, key);
+
+            // Assert
+            Assert.AreEqual(plainText, decryptedText, "Decrypted whitespace-only text should match the original plain text.");
+        }
+
+        [TestMethod]
+        public void ADV_TestEncryptionDecryption_SimilarKeys()
+        {
+            // Arrange
+            string plainText = "Hello, World!";
+            string key1 = "1234567890123456";
+            string key2 = "1234567890123457"; // Slightly different key
+
+            // Act
+            string encryptedText1 = Encrpytion.Encrypt(plainText, key1);
+            string encryptedText2 = Encrpytion.Encrypt(plainText, key2);
+
+            // Assert
+            Assert.AreNotEqual(encryptedText1, encryptedText2, "Encryption with similar keys should produce different results.");
+        }
+
+        [TestMethod]
+        public void ADV_TestEncryptionDecryption_NullCharacters()
+        {
+            // Arrange
+            string plainText = "Hello\0World\0";
+
+            // Act
+            string encryptedText = Encrpytion.Encrypt(plainText, key);
+            string decryptedText = Encrpytion.Decrypt(encryptedText, key);
+
+            // Assert
+            Assert.AreEqual(plainText, decryptedText, "Decrypted text with null characters should match the original plain text.");
+        }
+
+        [TestMethod]
+        public void ADV_TestEncryptionDecryption_SubsetStrings()
+        {
+            // Arrange
+            string plainText1 = "Hello";
+            string plainText2 = "Hello, World!";
+
+            // Act
+            string encryptedText1 = Encrpytion.Encrypt(plainText1, key);
+            string encryptedText2 = Encrpytion.Encrypt(plainText2, key);
+
+            // Assert
+            Assert.AreNotEqual(encryptedText1, encryptedText2, "Subset strings should produce different encrypted results.");
+        }
+
+        [TestMethod]
+        public void ADV_TestEncryptionIntegrityAfterSerialization()
+        {
+            // Arrange
+            string plainText = "Serialize this!";
+            string encryptedText = Encrpytion.Encrypt(plainText, key);
+
+            // Simulate serialization
+            byte[] serializedData = Encoding.UTF8.GetBytes(encryptedText);
+            string deserializedEncryptedText = Encoding.UTF8.GetString(serializedData);
+
+            // Act
+            string decryptedText = Encrpytion.Decrypt(deserializedEncryptedText, key);
+
+            // Assert
+            Assert.AreEqual(plainText, decryptedText, "Decrypted text after serialization should match the original plain text.");
+        }
+
+        [TestMethod]
+        public void ADV_TestEncryptDecrypt_MultipleThreads()
+        {
+            // Arrange
+            string plainText = "Hello from threads!";
+            int threadCount = 10;
+            string[] results = new string[threadCount];
+            System.Threading.Tasks.Parallel.For(0, threadCount, i =>
+            {
+                results[i] = Encrpytion.Encrypt(plainText, key);
+            });
+
+            // Act & Assert
+            for (int i = 0; i < threadCount; i++)
+            {
+                Assert.IsTrue(IsEncryptedDifferent(plainText, results[i]), $"Thread {i} encryption failed. Result should differ from plain text.");
+            }
+        }
+
+
+
     }
 
 }
