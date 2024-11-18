@@ -42,19 +42,21 @@
             statusLabel = new Label();
             controlPanel = new Panel();
             statusCheckLabel = new Label();
+            label1 = new Label();
+            panel1 = new Panel();
+            commandLabel = new Label();
+            commandInput = new TextBox();
+            sendButton = new Button();
             speedInput = new TextBox();
+            centreRadioButton = new RadioButton();
             label5 = new Label();
+            satRadioButton = new RadioButton();
             altInput = new TextBox();
+            label2 = new Label();
             label4 = new Label();
+            latInput = new TextBox();
             longInput = new TextBox();
             label3 = new Label();
-            label2 = new Label();
-            label1 = new Label();
-            latInput = new TextBox();
-            panel1 = new Panel();
-            sendButton = new Button();
-            centreRadioButton = new RadioButton();
-            satRadioButton = new RadioButton();
             visualPanel = new Panel();
             consoleTextBox = new TextBox();
             panel3 = new Panel();
@@ -72,8 +74,6 @@
             verticalProgressBar = new VerticalProgressBar();
             visualEarthPanel = new Panel();
             visualLabelSection = new Label();
-            commandInput = new TextBox();
-            commandLabel = new Label();
             statusPanel.SuspendLayout();
             controlPanel.SuspendLayout();
             panel1.SuspendLayout();
@@ -158,9 +158,9 @@
             velLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             velLabel.Location = new Point(36, 649);
             velLabel.Name = "velLabel";
-            velLabel.Size = new Size(196, 32);
+            velLabel.Size = new Size(175, 32);
             velLabel.TabIndex = 7;
-            velLabel.Text = "Velocity (km/h):";
+            velLabel.Text = "Speed (km/h):";
             // 
             // altLabel
             // 
@@ -168,9 +168,9 @@
             altLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             altLabel.Location = new Point(38, 475);
             altLabel.Name = "altLabel";
-            altLabel.Size = new Size(113, 32);
+            altLabel.Size = new Size(173, 32);
             altLabel.TabIndex = 5;
-            altLabel.Text = "Altitude:";
+            altLabel.Text = "Altitude (km):";
             // 
             // longLabel
             // 
@@ -178,9 +178,9 @@
             longLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             longLabel.Location = new Point(38, 306);
             longLabel.Name = "longLabel";
-            longLabel.Size = new Size(146, 32);
+            longLabel.Size = new Size(261, 32);
             longLabel.TabIndex = 3;
-            longLabel.Text = "Longtitude:";
+            longLabel.Text = "Longtitude (degrees):";
             // 
             // latLabel
             // 
@@ -188,9 +188,9 @@
             latLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             latLabel.Location = new Point(38, 159);
             latLabel.Name = "latLabel";
-            latLabel.Size = new Size(123, 32);
+            latLabel.Size = new Size(238, 32);
             latLabel.TabIndex = 2;
-            latLabel.Text = "Lattitude:";
+            latLabel.Text = "Lattitude (degrees):";
             // 
             // statusLabel
             // 
@@ -224,71 +224,6 @@
             statusCheckLabel.TabIndex = 17;
             statusCheckLabel.Text = "Online";
             // 
-            // speedInput
-            // 
-            speedInput.Location = new Point(38, 707);
-            speedInput.Name = "speedInput";
-            speedInput.Size = new Size(461, 39);
-            speedInput.TabIndex = 15;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.BackColor = Color.DarkGray;
-            label5.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label5.Location = new Point(38, 648);
-            label5.Name = "label5";
-            label5.Size = new Size(196, 32);
-            label5.TabIndex = 12;
-            label5.Text = "Velocity (km/h):";
-            // 
-            // altInput
-            // 
-            altInput.Location = new Point(38, 530);
-            altInput.Name = "altInput";
-            altInput.Size = new Size(461, 39);
-            altInput.TabIndex = 14;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.BackColor = Color.DarkGray;
-            label4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label4.Location = new Point(38, 474);
-            label4.Name = "label4";
-            label4.Size = new Size(113, 32);
-            label4.TabIndex = 12;
-            label4.Text = "Altitude:";
-            // 
-            // longInput
-            // 
-            longInput.Location = new Point(38, 356);
-            longInput.Name = "longInput";
-            longInput.Size = new Size(461, 39);
-            longInput.TabIndex = 13;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.BackColor = Color.DarkGray;
-            label3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label3.Location = new Point(38, 305);
-            label3.Name = "label3";
-            label3.Size = new Size(146, 32);
-            label3.TabIndex = 12;
-            label3.Text = "Longtitude:";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.BackColor = Color.DarkGray;
-            label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label2.Location = new Point(38, 158);
-            label2.Name = "label2";
-            label2.Size = new Size(123, 32);
-            label2.TabIndex = 12;
-            label2.Text = "Lattitude:";
-            // 
             // label1
             // 
             label1.AutoSize = true;
@@ -298,13 +233,6 @@
             label1.Size = new Size(220, 60);
             label1.TabIndex = 12;
             label1.Text = "Controls";
-            // 
-            // latInput
-            // 
-            latInput.Location = new Point(38, 203);
-            latInput.Name = "latInput";
-            latInput.Size = new Size(461, 39);
-            latInput.TabIndex = 3;
             // 
             // panel1
             // 
@@ -328,6 +256,24 @@
             panel1.Size = new Size(552, 1157);
             panel1.TabIndex = 16;
             // 
+            // commandLabel
+            // 
+            commandLabel.AutoSize = true;
+            commandLabel.BackColor = Color.DarkGray;
+            commandLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            commandLabel.Location = new Point(38, 36);
+            commandLabel.Name = "commandLabel";
+            commandLabel.Size = new Size(138, 32);
+            commandLabel.TabIndex = 17;
+            commandLabel.Text = "Command:";
+            // 
+            // commandInput
+            // 
+            commandInput.Location = new Point(38, 71);
+            commandInput.Name = "commandInput";
+            commandInput.Size = new Size(461, 39);
+            commandInput.TabIndex = 16;
+            // 
             // sendButton
             // 
             sendButton.BackColor = Color.YellowGreen;
@@ -343,6 +289,13 @@
             sendButton.UseVisualStyleBackColor = false;
             sendButton.Click += SendButton_Click;
             // 
+            // speedInput
+            // 
+            speedInput.Location = new Point(38, 707);
+            speedInput.Name = "speedInput";
+            speedInput.Size = new Size(461, 39);
+            speedInput.TabIndex = 15;
+            // 
             // centreRadioButton
             // 
             centreRadioButton.AutoSize = true;
@@ -352,6 +305,17 @@
             centreRadioButton.TabIndex = 2;
             centreRadioButton.Text = "Centre";
             centreRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.BackColor = Color.DarkGray;
+            label5.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label5.Location = new Point(38, 648);
+            label5.Name = "label5";
+            label5.Size = new Size(175, 32);
+            label5.TabIndex = 12;
+            label5.Text = "Speed (km/h):";
             // 
             // satRadioButton
             // 
@@ -363,6 +327,60 @@
             satRadioButton.Text = "Satellite";
             satRadioButton.UseVisualStyleBackColor = true;
             satRadioButton.CheckedChanged += satRadioButton_CheckedChanged;
+            // 
+            // altInput
+            // 
+            altInput.Location = new Point(38, 530);
+            altInput.Name = "altInput";
+            altInput.Size = new Size(461, 39);
+            altInput.TabIndex = 14;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.BackColor = Color.DarkGray;
+            label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label2.Location = new Point(38, 158);
+            label2.Name = "label2";
+            label2.Size = new Size(238, 32);
+            label2.TabIndex = 12;
+            label2.Text = "Lattitude (degrees):";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.BackColor = Color.DarkGray;
+            label4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label4.Location = new Point(38, 474);
+            label4.Name = "label4";
+            label4.Size = new Size(173, 32);
+            label4.TabIndex = 12;
+            label4.Text = "Altitude (km):";
+            // 
+            // latInput
+            // 
+            latInput.Location = new Point(38, 203);
+            latInput.Name = "latInput";
+            latInput.Size = new Size(461, 39);
+            latInput.TabIndex = 3;
+            // 
+            // longInput
+            // 
+            longInput.Location = new Point(38, 356);
+            longInput.Name = "longInput";
+            longInput.Size = new Size(461, 39);
+            longInput.TabIndex = 13;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.BackColor = Color.DarkGray;
+            label3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label3.Location = new Point(38, 305);
+            label3.Name = "label3";
+            label3.Size = new Size(261, 32);
+            label3.TabIndex = 12;
+            label3.Text = "Longtitude (degrees):";
             // 
             // visualPanel
             // 
@@ -534,27 +552,9 @@
             visualLabelSection.Font = new Font("Arial", 19.875F, FontStyle.Regular, GraphicsUnit.Point, 0);
             visualLabelSection.Location = new Point(62, 29);
             visualLabelSection.Name = "visualLabelSection";
-            visualLabelSection.Size = new Size(192, 60);
+            visualLabelSection.Size = new Size(308, 60);
             visualLabelSection.TabIndex = 17;
-            visualLabelSection.Text = "Visuals";
-            // 
-            // commandInput
-            // 
-            commandInput.Location = new Point(38, 71);
-            commandInput.Name = "commandInput";
-            commandInput.Size = new Size(461, 39);
-            commandInput.TabIndex = 16;
-            // 
-            // commandLabel
-            // 
-            commandLabel.AutoSize = true;
-            commandLabel.BackColor = Color.DarkGray;
-            commandLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            commandLabel.Location = new Point(38, 36);
-            commandLabel.Name = "commandLabel";
-            commandLabel.Size = new Size(138, 32);
-            commandLabel.TabIndex = 17;
-            commandLabel.Text = "Command:";
+            visualLabelSection.Text = "Dashboards";
             // 
             // Dashboard
             // 
