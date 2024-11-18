@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.IO;            //for file handling
 using Newtonsoft.Json;      //this lets us convert (serialize) the packet data to JSON format
 
 namespace Dashboard
@@ -11,6 +12,28 @@ namespace Dashboard
     //this class handles everything related to our Ground Station packets - creating, sending, and logging them
     public class GroundStationPacketHandler
     {
+        private readonly string logFilePath;        //path for the log file
+
+        //constructor to ensure the log file exists in the Dashboard directory
+        public GroundStationPacketHandler()
+        {
+            //get the current directory where the app is running (bin/debug/netX.0-windows folder)
+            string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            //navigate up to the "bin" directory by going up two levels
+            string dashboardDirectory = Directory.GetParent(Directory.GetParent(appDirectory).Parent.FullName).FullName;
+
+            //combine the path of the "bin" directory with the log file name
+            logFilePath = Path.Combine(dashboardDirectory, "GroundStationPacketLogs.txt");
+
+            //check if the log file already exists
+            if (!File.Exists(logFilePath))
+            {
+                //if the file does not exist, create it and close it immediately (avoids locking issues)
+                File.Create(logFilePath).Close();
+            }
+        }
+
         //this function makes a new packet with data we provide, like temperature and radiation levels
         public GroundStationPacket CreatePacket(string commandType, string function, string crc)
         {
@@ -40,6 +63,9 @@ namespace Dashboard
                 //print the packet to the console, as if we are "sending" it
                 Console.WriteLine("Sending Packet:");
                 Console.WriteLine(jsonPacket);
+
+                //log the sent packet
+                LogSentPacket(packet);
 
                 return true;        //say everything went okay (successful transmission)
             }
@@ -138,11 +164,22 @@ namespace Dashboard
         //this internal function logs any packet with a specified log type  
         public void LogPacket(GroundStationPacket packet, string logType)
         {
-            //convert the packet to JSON, making it easy to read in the log
-            string log = SerializePacket(packet);
+            string log = SerializePacket(packet);       //serialize packet into JSON string
+            string logEntry = $"{DateTime.Now}: {logType}\n{log}\n";        //format log entry with timestamp and type
 
-            //print the log type and the JSON-formatted packet
+            //log to console for debugging
             Console.WriteLine($"{logType} Log:\n{log}");
+
+            //log to file
+            try
+            {
+                File.AppendAllText(logFilePath, logEntry);      //append the log entry to the file
+                Console.WriteLine($"Logged {logType} to file: {logFilePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error logging {logType}: {ex.Message}");        //handle file logging errors
+            }
         }
     }
 }
