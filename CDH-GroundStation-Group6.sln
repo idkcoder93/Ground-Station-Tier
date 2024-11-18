@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dashboard", "Dashboard\Dash
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ground station", "UDL grp4\ground station.csproj", "{BB59DBDA-7C65-4EB7-8B44-3436E6A2FB7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo Payload", "Demo Payload\Demo Payload.csproj", "{040013A0-CAC1-4884-B8B1-1744AA38DB71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo Payload", "Demo Payload\Demo Payload.csproj", "{040013A0-CAC1-4884-B8B1-1744AA38DB71}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroundStation.Tests", "GroundStation.Tests\GroundStation.Tests.csproj", "{C1850B3A-3C63-42A9-B4B7-CA4B8FE33B95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{A099CDB2-7DE1-4014-B6D5-779A9595F230}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{C1850B3A-3C63-42A9-B4B7-CA4B8FE33B95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1850B3A-3C63-42A9-B4B7-CA4B8FE33B95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1850B3A-3C63-42A9-B4B7-CA4B8FE33B95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A099CDB2-7DE1-4014-B6D5-779A9595F230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A099CDB2-7DE1-4014-B6D5-779A9595F230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A099CDB2-7DE1-4014-B6D5-779A9595F230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A099CDB2-7DE1-4014-B6D5-779A9595F230}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
