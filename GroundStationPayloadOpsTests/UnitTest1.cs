@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;             //using MS Test framework for writing and running tests
-using CDH_GroundStation_Group6;         //accessing our Ground Station classes
+using Dashboard;         //accessing our Ground Station classes
 
 namespace GroundStationPayloadOpsTests
 {

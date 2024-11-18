@@ -39,7 +39,7 @@
             SignInPanel.Controls.Add(signInButton);
             SignInPanel.Location = new Point(365, 199);
             SignInPanel.Name = "SignInPanel";
-            SignInPanel.Padding = new Padding(10, 10, 10, 10);
+            SignInPanel.Padding = new Padding(10);
             SignInPanel.Size = new Size(500, 600);
             SignInPanel.TabIndex = 0;
             // 
