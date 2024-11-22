@@ -45,6 +45,21 @@ namespace Dashboard
             };
         }
 
+        //this function is to combine Command and Data packets
+        public GroundStationPacket CombineCommandAndData(Command command, string telemetryData, string crc)
+        {
+            // Combine telemetry data and command properties into a single Function field
+            string functionData = $"{telemetryData},{command.Latitude},{command.Longitude},{command.Altitude},{command.Speed}";
+
+            // Create and return a new packet
+            return new GroundStationPacket
+            {
+                CommandType = command.CommandType,
+                Function = functionData,
+                CRC = crc
+            };
+        }
+
         //this function takes our packet and turns it into JSON format (a format easy for transmission)
         public string SerializePacket(GroundStationPacket packet)
         {

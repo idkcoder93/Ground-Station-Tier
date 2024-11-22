@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dashboard
 {
-    class Command
+    public class Command
     {
         private string commandType;
         private double speed, latitude, longitude, altitude;
