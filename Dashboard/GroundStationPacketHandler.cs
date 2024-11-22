@@ -63,35 +63,49 @@ namespace Dashboard
         //this function takes our packet and turns it into JSON format (a format easy for transmission)
         public string SerializePacket(GroundStationPacket packet)
         {
-            //converts the packet object to a formatted JSON string
+            if (packet == null)
+            {
+                Console.WriteLine("Serialization error: Packet is null.");
+                return string.Empty; // Return an empty string to signify no serialization
+            }
+
+            // Converts the packet object to a formatted JSON string
             return JsonConvert.SerializeObject(packet, Newtonsoft.Json.Formatting.Indented);
         }
+
 
         //this function simulates sending the packet. here we just print it, but in the real system, we'd send it over a network.
         public bool SendPacket(GroundStationPacket packet)
         {
+            if (packet == null)
+            {
+                Console.WriteLine("Transmission error: Packet is null.");
+                return false; // Signal transmission failure
+            }
+
             try
             {
-                //turn the packet into JSON format, which is easy to transmit
+                // Turn the packet into JSON format, which is easy to transmit
                 string jsonPacket = SerializePacket(packet);
 
-                //print the packet to the console, as if we are "sending" it
+                // Print the packet to the console, as if we are "sending" it
                 Console.WriteLine("Sending Packet:");
                 Console.WriteLine(jsonPacket);
 
-                //log the sent packet
+                // Log the sent packet
                 LogSentPacket(packet);
 
-                return true;        //say everything went okay (successful transmission)
+                return true; // Signal successful transmission
             }
             catch (Exception ex)
             {
-                //if something went wrong, print the error message
+                // If something went wrong, print the error message
                 Console.WriteLine($"Transmission error: {ex.Message}");
 
-                return false;       //signal that the transmission failed.
+                return false; // Signal that the transmission failed
             }
         }
+
 
         //this function takes a JSON string and converts it back into a packet (depacketizing)
         public GroundStationPacket DepacketizeData(string jsonPacket)
@@ -119,18 +133,25 @@ namespace Dashboard
         //this function handles any transmission errors and logs them
         public bool HandleTransmissionError(GroundStationPacket packet)
         {
+            if (packet == null)
+            {
+                Console.WriteLine("Error during transmission: Packet is null.");
+                return false; // Return false explicitly for null input
+            }
+
             try
             {
-                //try sending the packet and return true if successful
+                // Try sending the packet and return true if successful
                 return SendToUplinkDownlink(packet);
             }
             catch (Exception ex)
             {
-                //if there is an error, log it
+                // If there is an error, log it
                 Console.WriteLine($"Error during transmission: {ex.Message}");
-                return false;       //signal failure
+                return false; // Signal failure
             }
         }
+
 
         //this function provides feedback on whether the transmission was successful
         public void ProvideTransmissionFeedback(bool success)

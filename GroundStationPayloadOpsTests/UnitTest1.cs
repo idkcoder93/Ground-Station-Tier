@@ -138,28 +138,30 @@ namespace GroundStationPayloadOpsTests
         [TestMethod]
         public void TestSerializePacketWithNullInput()
         {
-            //Act - attempt to serialize a null packet
+            // Act - attempt to serialize a null packet
             string jsonPacket = handler.SerializePacket(null);
 
-            //Assert - check that the JSON string is either null or empty to signify failed serialization
-            Assert.IsTrue(string.IsNullOrEmpty(jsonPacket));
+            // Assert - check that the JSON string is empty to signify failed serialization
+            Assert.IsTrue(string.IsNullOrEmpty(jsonPacket)); // Should handle null input gracefully
         }
+
 
         [TestMethod]
         public void TestSerializeEmptyPacket()
         {
-            //Arrange - create an empty packet
+            // Arrange - create an empty packet
             GroundStationPacket packet = new GroundStationPacket();
 
-            //Act - serialize the empty packet
+            // Act - serialize the empty packet
             string jsonPacket = handler.SerializePacket(packet);
 
-            //Assert - check that the JSON contains the default field values 
+            // Assert - check that the JSON contains the default field values
             Assert.IsNotNull(jsonPacket);
-            Assert.IsTrue(jsonPacket.Contains("\"CommandType\": \"telemetry\""));  //default datatype
-            Assert.IsTrue(jsonPacket.Contains("\"Function\": \"\""));              // empty data field
-            Assert.IsTrue(jsonPacket.Contains("\"CRC\": \"\""));                //empty CRC
+            Assert.IsTrue(jsonPacket.Contains("\"CommandType\": \"\"")); // Updated default value
+            Assert.IsTrue(jsonPacket.Contains("\"Function\": \"\""));    // Empty data field
+            Assert.IsTrue(jsonPacket.Contains("\"CRC\": \"\""));         // Empty CRC
         }
+
 
         [TestMethod]
         public void TestSerializePacketWithLargeDataFields()
@@ -199,6 +201,35 @@ namespace GroundStationPayloadOpsTests
         }
 
         //DepacketizeData Tests
+        [TestMethod]
+        public void TestDepacketizeEmptyJson()
+        {
+            // Act - Attempt to depacketize an empty JSON string
+            GroundStationPacket packet = handler.DepacketizeData("");
+
+            // Assert - Verify that an empty packet is returned
+            Assert.IsNotNull(packet);
+            Assert.AreEqual(string.Empty, packet.CommandType);
+            Assert.AreEqual(string.Empty, packet.Function);
+            Assert.AreEqual(string.Empty, packet.CRC);
+        }
+
+        [TestMethod]
+        public void TestDepacketizePartialJson()
+        {
+            // Arrange - JSON with some fields missing
+            string partialJson = "{ \"CommandType\": \"telemetry\", \"Function\": \"22°C\" }";
+
+            // Act - Depacketize the partial JSON
+            GroundStationPacket packet = handler.DepacketizeData(partialJson);
+
+            // Assert - Verify that missing fields are set to defaults
+            Assert.IsNotNull(packet);
+            Assert.AreEqual("telemetry", packet.CommandType);
+            Assert.AreEqual("22°C", packet.Function);
+            Assert.AreEqual(string.Empty, packet.CRC); // Default for missing field
+        }
+
         [TestMethod]
         public void TestDepacketizeData()
         {
@@ -317,20 +348,20 @@ namespace GroundStationPayloadOpsTests
         [TestMethod]
         public void TestSendPacketFailure()
         {
-            //Arrange - create a packet to test sending
-            GroundStationPacket packet = handler.CreatePacket("telemetry", "22°C, 5mSv", "0110");
+            // Arrange - No packet to send (null input)
 
-            //Act - simulate an error during packet sending
+            // Act - Simulate an error during packet sending
             bool result;
             using (var sw = new StringWriter())
             {
                 Console.SetOut(sw);
-                result = handler.SendPacket(null); //Intentionally passing null to simulate failure
+                result = handler.SendPacket(null); // Intentionally passing null to simulate failure
             }
 
-            //Assert - check if failure was handled
-            Assert.IsFalse(result);         //should be false due to transmission error
+            // Assert - Check if failure was handled
+            Assert.IsFalse(result); // Should be false due to transmission error
         }
+
 
         [TestMethod]
         public void TestSendPacketConsoleOutputSuccess()
@@ -362,15 +393,16 @@ namespace GroundStationPayloadOpsTests
             {
                 Console.SetOut(sw);
 
-                //Act - simulate sending a null packet to cause failure
+                // Act - Simulate sending a null packet to cause failure
                 bool result = handler.SendPacket(null);
 
-                //Assert - verify that method returned false and output the correct error message
+                // Assert - Verify that the method returned false and output the correct error message
                 string consoleOutput = sw.ToString();
-                Assert.IsFalse(result);                                         //should return false for failed send
-                Assert.IsTrue(consoleOutput.Contains("Transmission error:"));   //check for error message
+                Assert.IsFalse(result); // Should return false for failed send
+                Assert.IsTrue(consoleOutput.Contains("Transmission error: Packet is null.")); // Check for specific error message
             }
         }
+
 
         [TestMethod]
         public void TestSendPacketWithLargeData()
@@ -394,26 +426,40 @@ namespace GroundStationPayloadOpsTests
         }
 
         [TestMethod]
+        public void TestSendPacketWithInvalidCrc()
+        {
+            // Arrange - Create a packet with an invalid CRC
+            GroundStationPacket packet = handler.CreatePacket("telemetry", "22°C", "INVALID_CRC");
+
+            // Act - Send the packet
+            bool result = handler.SendPacket(packet);
+
+            // Assert - Ensure the packet is not sent due to invalid CRC
+            Assert.IsFalse(result); // Should fail if CRC validation is implemented
+        }
+
+        [TestMethod]
         public void TestSendEmptyPacket()
         {
-            //Arrange - create an empty packet
+            // Arrange - create an empty packet
             GroundStationPacket packet = new GroundStationPacket();
 
             using (var sw = new StringWriter())
             {
                 Console.SetOut(sw);
 
-                //Act - simulate sending the empty packet
+                // Act - simulate sending the empty packet
                 bool result = handler.SendPacket(packet);
 
-                //Assert - check that sending was successful and default values are in output
+                // Assert - check that sending was successful and default values are in output
                 string consoleOutput = sw.ToString();
                 Assert.IsTrue(result);
-                Assert.IsTrue(consoleOutput.Contains("\"CommandType\": \"telemetry\""));       //default datatype
-                Assert.IsTrue(consoleOutput.Contains("\"Function\": \"\""));        //empty data field
-                Assert.IsTrue(consoleOutput.Contains("\"CRC\": \"\""));         //empty CRC
+                Assert.IsTrue(consoleOutput.Contains("\"CommandType\": \"\""));   // Corrected default value
+                Assert.IsTrue(consoleOutput.Contains("\"Function\": \"\""));     // Empty data field
+                Assert.IsTrue(consoleOutput.Contains("\"CRC\": \"\""));          // Empty CRC
             }
         }
+
 
         //Test SendtoUplinkDownlink Wrapper method
         [TestMethod]
@@ -762,23 +808,262 @@ namespace GroundStationPayloadOpsTests
         [TestMethod]
         public void TestLogPacketWithEmptyFields()
         {
-            //Arrange - create a packet with empty/default fields
-            GroundStationPacket packet = new GroundStationPacket(); //defaults to empty values
+            // Arrange - create a packet with empty/default fields
+            GroundStationPacket packet = new GroundStationPacket(); // defaults to empty values
 
             using (var sw = new StringWriter())
             {
                 Console.SetOut(sw);
 
-                //Act - log the packet with empty fields
+                // Act - log the packet with empty fields
                 handler.LogPacket(packet, "Empty Fields Test");
 
-                //Assert - check that output includes empty fields in JSON format
+                // Assert - check that output includes empty fields in JSON format
                 string output = sw.ToString();
                 Assert.IsTrue(output.Contains("Empty Fields Test Log:"));
-                Assert.IsTrue(output.Contains("\"CommandType\": \"telemetry\""));      //default value for datatype
-                Assert.IsTrue(output.Contains("\"Function\": \"\""));       //empty Data field
-                Assert.IsTrue(output.Contains("\"CRC\": \"\""));        //empty CRC
+                Assert.IsTrue(output.Contains("\"CommandType\": \"\""));      // Corrected default value
+                Assert.IsTrue(output.Contains("\"Function\": \"\""));         // Empty data field
+                Assert.IsTrue(output.Contains("\"CRC\": \"\""));             // Empty CRC
             }
         }
+
+        [TestMethod]
+        public void TestLogPacketWithNullInput()
+        {
+            using (var sw = new StringWriter())
+            {
+                Console.SetOut(sw);
+
+                // Act - Log a null packet
+                handler.LogPacket(null, "Null Packet Log");
+
+                // Assert - Verify output contains the expected error message
+                string consoleOutput = sw.ToString();
+                Assert.IsTrue(consoleOutput.Contains("Null Packet Log:"));
+                Assert.IsTrue(consoleOutput.Contains("{}")); // Null packet serialized as empty JSON
+            }
+        }
+
+        [TestMethod]
+        public void TestLogPacketWithSpecialLogType()
+        {
+            // Arrange - Create a valid packet
+            GroundStationPacket packet = handler.CreatePacket("telemetry", "22°C", "CRC");
+
+            using (var sw = new StringWriter())
+            {
+                Console.SetOut(sw);
+
+                // Act - Log the packet with a special log type
+                handler.LogPacket(packet, "Special!@#LogType");
+
+                // Assert - Ensure the log type appears in the output
+                string consoleOutput = sw.ToString();
+                Assert.IsTrue(consoleOutput.Contains("Special!@#LogType Log:"));
+            }
+        }
+
+        //Integration Tests
+        [TestMethod]
+        public void TestEndToEndDataFlow()
+        {
+            // Arrange: Mock the data from the other group's class
+            var command = new Command
+            {
+                CommandType = "telemetry",
+                Latitude = 51.5074,
+                Longitude = -0.1278,
+                Altitude = 12000,
+                Speed = 500
+            };
+            string telemetryData = "22°C, 5mSv";
+            string crc = "0110";
+
+            // Act: Packetize the data
+            var handler = new GroundStationPacketHandler();
+            GroundStationPacket packet = handler.CombineCommandAndData(command, telemetryData, crc);
+
+            // Assert: Verify the packetized data
+            Assert.AreEqual("telemetry", packet.CommandType);
+            string expectedFunction = "22°C, 5mSv,51.5074,-0.1278,12000,500";
+            Assert.AreEqual(expectedFunction, packet.Function);
+            Assert.AreEqual(crc, packet.CRC);
+
+            // Act: Depacketize the data
+            string jsonPacket = handler.SerializePacket(packet);
+            GroundStationPacket depacketizedPacket = handler.DepacketizeData(jsonPacket);
+
+            // Assert: Verify the depacketized data matches the original
+            Assert.AreEqual("telemetry", depacketizedPacket.CommandType);
+            Assert.AreEqual(expectedFunction, depacketizedPacket.Function);
+            Assert.AreEqual(crc, depacketizedPacket.CRC);
+
+            // Simulate passing the depacketized data back to the other group
+            Command receivedCommand = new Command
+            {
+                CommandType = depacketizedPacket.CommandType,
+                Latitude = double.Parse(depacketizedPacket.Function.Split(',')[2]),
+                Longitude = double.Parse(depacketizedPacket.Function.Split(',')[3]),
+                Altitude = int.Parse(depacketizedPacket.Function.Split(',')[4]),
+                Speed = int.Parse(depacketizedPacket.Function.Split(',')[5])
+            };
+
+            // Assert: Verify the data passed back matches the original
+            Assert.AreEqual(command.CommandType, receivedCommand.CommandType);
+            Assert.AreEqual(command.Latitude, receivedCommand.Latitude);
+            Assert.AreEqual(command.Longitude, receivedCommand.Longitude);
+            Assert.AreEqual(command.Altitude, receivedCommand.Altitude);
+            Assert.AreEqual(command.Speed, receivedCommand.Speed);
+        }
+
+        [TestMethod]
+        public void TestIntegrationWithInvalidData()
+        {
+            // Arrange: Simulate invalid data from the other group
+            var command = new Command
+            {
+                CommandType = null,  // Invalid
+                Latitude = double.NaN,  // Invalid
+                Longitude = double.NaN,  // Invalid
+                Altitude = -1,  // Invalid
+                Speed = -1  // Invalid
+            };
+            string telemetryData = null;
+            string crc = "invalid";
+
+            // Act: Attempt to create a packet
+            var handler = new GroundStationPacketHandler();
+            GroundStationPacket packet = handler.CombineCommandAndData(command, telemetryData, crc);
+
+            // Assert: Verify the packet's integrity with invalid input
+            Assert.AreEqual(string.Empty, packet.CommandType);
+            Assert.AreEqual(",,NaN,NaN,-1,-1", packet.Function);
+            Assert.AreEqual("invalid", packet.CRC);
+
+            // Act: Attempt to depacketize invalid JSON
+            string invalidJson = "{ \"CommandType\": null, \"Function\": null, \"CRC\": null }";
+            GroundStationPacket depacketizedPacket = handler.DepacketizeData(invalidJson);
+
+            // Assert: Ensure defaults are applied to the depacketized packet
+            Assert.AreEqual(string.Empty, depacketizedPacket.CommandType);
+            Assert.AreEqual(string.Empty, depacketizedPacket.Function);
+            Assert.AreEqual(string.Empty, depacketizedPacket.CRC);
+        }
+
+        [TestMethod]
+        public void TestLargeDataFlow()
+        {
+            // Arrange: Simulate large data from the other group
+            string largeTelemetryData = new string('A', 5000); // 5KB of telemetry data
+            var command = new Command
+            {
+                CommandType = "telemetry",
+                Latitude = 40.7128,
+                Longitude = -74.0060,
+                Altitude = 15000,
+                Speed = 600
+            };
+            string crc = new string('B', 1000); // Large CRC
+
+            // Act: Packetize the large data
+            var handler = new GroundStationPacketHandler();
+            GroundStationPacket packet = handler.CombineCommandAndData(command, largeTelemetryData, crc);
+
+            // Assert: Verify that the packet contains all data without truncation
+            Assert.AreEqual(largeTelemetryData + ",40.7128,-74.0060,15000,600", packet.Function);
+            Assert.AreEqual(crc, packet.CRC);
+
+            // Act: Depacketize the large data
+            string jsonPacket = handler.SerializePacket(packet);
+            GroundStationPacket depacketizedPacket = handler.DepacketizeData(jsonPacket);
+
+            // Assert: Verify that the depacketized data matches the original
+            Assert.AreEqual(largeTelemetryData + ",40.7128,-74.0060,15000,600", depacketizedPacket.Function);
+            Assert.AreEqual(crc, depacketizedPacket.CRC);
+        }
+
+        [TestMethod]
+        public void TestConcurrentDataExchange()
+        {
+            // Arrange: Simulate multiple packets being exchanged concurrently
+            var handler = new GroundStationPacketHandler();
+            var packets = new List<GroundStationPacket>();
+
+            Parallel.For(0, 10, i =>
+            {
+                // Create unique packets for each thread
+                var command = new Command
+                {
+                    CommandType = "telemetry",
+                    Latitude = i * 10,
+                    Longitude = i * -10,
+                    Altitude = i * 1000,
+                    Speed = i * 100
+                };
+                string telemetryData = $"{i}°C, {i * 2}mSv";
+                string crc = $"CRC-{i}";
+
+                // Packetize data
+                GroundStationPacket packet = handler.CombineCommandAndData(command, telemetryData, crc);
+
+                // Serialize and depacketize to simulate full flow
+                string jsonPacket = handler.SerializePacket(packet);
+                GroundStationPacket depacketizedPacket = handler.DepacketizeData(jsonPacket);
+
+                // Store the processed packet
+                lock (packets)
+                {
+                    packets.Add(depacketizedPacket);
+                }
+            });
+
+            // Assert: Verify that all packets were processed correctly
+            Assert.AreEqual(10, packets.Count);
+            for (int i = 0; i < 10; i++)
+            {
+                Assert.AreEqual($"CRC-{i}", packets[i].CRC);
+                Assert.IsTrue(packets[i].Function.Contains($"{i}°C"));
+            }
+        }
+
+        [TestMethod]
+        public void TestSerializeAndDeserializeLargePacket()
+        {
+            // Arrange - Create a packet with large data
+            string largeString = new string('A', 10000); // 10,000 characters
+            GroundStationPacket packet = handler.CreatePacket(largeString, largeString, largeString);
+
+            // Act - Serialize and then deserialize the packet
+            string jsonPacket = handler.SerializePacket(packet);
+            GroundStationPacket deserializedPacket = handler.DepacketizeData(jsonPacket);
+
+            // Assert - Ensure no data is lost during the process
+            Assert.IsNotNull(deserializedPacket);
+            Assert.AreEqual(largeString, deserializedPacket.CommandType);
+            Assert.AreEqual(largeString, deserializedPacket.Function);
+            Assert.AreEqual(largeString, deserializedPacket.CRC);
+        }
+
+        [TestMethod]
+        public void TestSerializeAndDeserializeWithSpecialCharacters()
+        {
+            // Arrange - Create a packet with special characters
+            string commandType = "telemetry-1";
+            string function = "22°C, 5mSv";
+            string crc = "!@#";
+
+            GroundStationPacket packet = handler.CreatePacket(commandType, function, crc);
+
+            // Act - Serialize and then deserialize the packet
+            string jsonPacket = handler.SerializePacket(packet);
+            GroundStationPacket deserializedPacket = handler.DepacketizeData(jsonPacket);
+
+            // Assert - Ensure fields with special characters are preserved
+            Assert.IsNotNull(deserializedPacket);
+            Assert.AreEqual(commandType, deserializedPacket.CommandType);
+            Assert.AreEqual(function, deserializedPacket.Function);
+            Assert.AreEqual(crc, deserializedPacket.CRC);
+        }
+
     }
 }
