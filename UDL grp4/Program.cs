@@ -1,10 +1,17 @@
 using ground_station.Services;
+using ground_station.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
 
 namespace ground_station
 {
@@ -26,18 +33,15 @@ namespace ground_station
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ground Station API", Version = "v1" });
             });
 
-            // Register UplinkCommunicationService as a Singleton
+            // Register services
             services.AddSingleton<UplinkCommunicationService>();
-
-            // Register LoggingAndMonitoringService as Singleton
             services.AddSingleton<LoggingAndMonitoringService>();
-
-            // Register DownlinkCommunicationService as Scoped
             services.AddSingleton<DownlinkCommunicationService>();
+            services.AddHttpClient<DataForwardingService>(); // Register forwarding service
 
-            services.AddHttpClient<DataForwardingService>();// Register the forwarding service with HttpClient
+            // Add MongoDbService for saving data to MongoDB
+            services.AddSingleton<MongoDbService>();
         }
-
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -51,13 +55,45 @@ namespace ground_station
             app.UseRouting();
             app.UseAuthorization();
 
+            // Define /api/uplink endpoint here, use UseEndpoints instead of MapPost directly
             app.UseEndpoints(endpoints =>
             {
+                // Define POST route in UseEndpoints method
+                endpoints.MapPost("/api/uplink", async (CommandPacket commandPacket, DataForwardingService forwardingService, MongoDbService mongoDbService) =>
+                {
+                    Console.WriteLine("Uplink received command packet:");
+                    Console.WriteLine($"Command: {commandPacket.Command}");
+                    Console.WriteLine($"Source: {commandPacket.Source}");
+                    Console.WriteLine($"Destination: {commandPacket.Destination}");
+
+                    var destinationUrl = "http://localhost:5297"; // Update with your actual URL
+
+                    try
+                    {
+                        // Forward data
+                        if (await forwardingService.ForwardDataAsync(destinationUrl, commandPacket))
+                        {
+                            // Save to MongoDB
+                            await mongoDbService.SaveDataAsync("commandPackets", commandPacket);
+                            Console.WriteLine("Data saved to MongoDB successfully.");
+                            return Results.Ok("Command forwarded and saved successfully.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                    }
+
+                    return Results.Problem("Failed to forward command.", statusCode: 500);
+                });
+
+                // Use Controllers for other routes
                 endpoints.MapControllers();
             });
         }
     }
 }
+
 
 namespace ground_station
 {

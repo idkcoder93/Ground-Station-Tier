@@ -1,66 +1,44 @@
-﻿    using System;
-    using System.Net.Http;
-    using System.Text;
-    using System.Text.Json;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
+﻿using ground_station.Services;
 
-namespace ground_station.Services
+public class DataForwardingService
 {
-    public class DataForwardingService
+    private readonly HttpClient _httpClient;
+    private readonly MongoDbService _mongoDbService;
+    private readonly ILogger<DataForwardingService> _logger;
+
+    public DataForwardingService(HttpClient httpClient, MongoDbService mongoDbService, ILogger<DataForwardingService> logger)
     {
-        private readonly HttpClient _httpClient;
-        private readonly ILogger<DataForwardingService> _logger;
+        _httpClient = httpClient;
+        _mongoDbService = mongoDbService;
+        _logger = logger;
+    }
 
-        public DataForwardingService(HttpClient httpClient, ILogger<DataForwardingService> logger)
+    public async Task<bool> ForwardDataAsync(string url, object data)
+    {
+        try
         {
-            _httpClient = httpClient;
-            _logger = logger;
+            // Log full URL and method
+            _logger.LogInformation($"Sending POST request to {url}");
+
+            var response = await _httpClient.PostAsJsonAsync(url, data);
+
+            // Log response status and content
+            _logger.LogInformation($"Response Status: {response.StatusCode}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                _logger.LogError($"Error Response: {responseBody}");
+            }
+
+            response.EnsureSuccessStatusCode();  // This throws if status code is not 2xx
+            return response.IsSuccessStatusCode;
         }
-
-        public async Task<bool> ForwardDataAsync(string destinationUrl, object data)
+        catch (HttpRequestException ex)
         {
-            // Validate input parameters
-            if (string.IsNullOrWhiteSpace(destinationUrl))
-            {
-                _logger.LogError("Destination URL cannot be null or empty.");
-                return false;
-            }
-
-            if (data == null)
-            {
-                _logger.LogError("Data cannot be null.");
-                return false;
-            }
-
-            try
-            {
-                var jsonData = JsonSerializer.Serialize(data);
-                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-                var response = await _httpClient.PostAsync(destinationUrl, content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    _logger.LogInformation($"Data successfully forwarded to {destinationUrl}");
-                    return true;
-                }
-                else
-                {
-                    _logger.LogError($"Failed to forward data to {destinationUrl}. Status code: {response.StatusCode}");
-                    return false;
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError($"HTTP request failed while forwarding data to {destinationUrl}: {ex.Message}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Exception occurred while forwarding data to {destinationUrl}: {ex.Message}");
-                return false;
-            }
+            // Log more detailed error information
+            _logger.LogError($"Error forwarding data to {url}: {ex.Message}");
+            _logger.LogError($"Response: {ex.InnerException?.Message}");
+            return false;
         }
     }
 }
