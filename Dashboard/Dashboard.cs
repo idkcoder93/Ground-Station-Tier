@@ -1,3 +1,9 @@
+using System;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Text.RegularExpressions;
 
 namespace Dashboard
@@ -6,16 +12,81 @@ namespace Dashboard
     {
         Status status = new Status();
         GroundStationPacketHandler handler = new GroundStationPacketHandler();
+        SpaceCraftPacket SpaceCraftPacket = new SpaceCraftPacket();
         Command command = new Command();
         Destination destination = new Destination();
         Database db = new Database();
+        private HttpListener httpListener; // listens for incoming packets
+        private NetworkConnection sendMessage = new NetworkConnection();
 
         public Dashboard()
         {
             InitializeComponent();
+            StartHttpListener();
             status.StatusState = "ONLINE"; // online when launched
         }
-        private void SendButton_Click(object sender, EventArgs e)
+        private async void StartHttpListener()
+        {
+            // Initialize the HTTP listener
+            httpListener = new HttpListener();
+            httpListener.Prefixes.Add("http://localhost:9000/"); // Listen on localhost and port 9000
+            httpListener.Start();
+
+            // Update the UI
+            MessageBox.Show("Server is online", "listening to port 9000", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            // Asynchronously handle requests
+            await Task.Run(() => HandleRequests());
+        }
+        private async Task HandleRequests()
+        {
+            while (httpListener.IsListening)
+            {
+                try
+                {
+                    // Wait for an incoming request
+                    var context = await httpListener.GetContextAsync();
+
+                    // Process the request
+                    var request = context.Request;
+                    if (request.HttpMethod == "POST" && request.ContentType == "application/json")
+                    {
+                        // Read the JSON data
+                        using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
+                        {
+                            var json = await reader.ReadToEndAsync();
+                            UpdateStatus(json);
+                            SpaceCraftPacket = SpaceCraftPacketHandler.DeserializeSpacePacket(json);
+                            DisplaySpacePacket(SpaceCraftPacket);
+                        }
+                    }
+
+                    // Send a response
+                    var response = context.Response;
+                    var responseMessage = Encoding.UTF8.GetBytes("Request processed successfully.");
+                    response.ContentLength64 = responseMessage.Length;
+                    await response.OutputStream.WriteAsync(responseMessage, 0, responseMessage.Length);
+                    response.Close();
+                }
+                catch (Exception ex)
+                {
+                    UpdateStatus(ex.Message);
+                }
+            }
+        }
+        private void UpdateStatus(string message)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => UpdateStatus(message)));
+            }
+            else
+            {
+                //listBoxLogs.Items.Add(message); // Example: Display logs in a ListBox
+                consoleTextBox.AppendText(message);
+            }
+        }
+        private async void SendButton_Click(object sender, EventArgs e)
         {
             if (!TryInitializeCommand(out Command command))
             {
@@ -29,7 +100,7 @@ namespace Dashboard
                 return;
             }
 
-            if (!SendPacket(command))
+            if (!await SendPacket(command))
             {
                 consoleTextBox.AppendText("Error: Packet not sent\n");
             }
@@ -82,7 +153,7 @@ namespace Dashboard
             MessageBox.Show($"Inputs are invalid. {message}", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
-        private bool SendPacket(Command command)
+        private async Task<bool> SendPacket(Command command)
         {
             // Concatenate telemetry data for the packet
             string function = $"{command.Latitude},{command.Longitude},{command.Altitude},{command.Speed}";
@@ -97,6 +168,7 @@ namespace Dashboard
             if (handler.SendPacket(currentPacket))
             {
                 consoleTextBox.AppendText("Packet sent:\n" + jsonPacket + "\n");
+                await sendMessage.SendHttpRequestAsync(jsonPacket); // sends pack to spacecraft
                 return true;
             }
 
@@ -142,6 +214,16 @@ namespace Dashboard
             return regex.IsMatch(c.CommandType);
         }
 
+        private void DisplaySpacePacket(SpaceCraftPacket packet)
+        {
+            if (packet == null) return;
+            else
+            {
+                latSatTextBox.Text = packet.Datetime;
+                longSatTextBox.Text = packet.Data;
+            }
+        }
+
         private void consoleTextBox_TextChanged(object sender, EventArgs e)
         {
 
@@ -157,7 +239,10 @@ namespace Dashboard
             satRadioButton.Checked = false;
             centreRadioButton.Checked = false;
         }
-
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            httpListener?.Stop();
+        }
         private void satRadioButton_CheckedChanged(object sender, EventArgs e)
         {
 
