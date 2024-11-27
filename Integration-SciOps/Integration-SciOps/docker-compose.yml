@@ -1,0 +1,95 @@
+services:
+  integration-sciops:
+    image: ${DOCKER_REGISTRY-}integrationsciops
+    container_name: groundstationuplinkdownlink
+    build:
+      context: .
+      dockerfile: Integration-SciOps/Dockerfile
+    ports:
+      - 7000:7000
+      - 7001:7001
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7000
+    networks:
+        - science-net
+    depends_on:
+        - scientificoperationscenter.api
+
+  scientificoperationscenter.client:
+    image: cherrytreegee811/scientificoperationscenterclient:latest
+    container_name: scientificoperationscenterclient
+    hostname: localhost
+    ports:
+        - 9000:9000
+        - 9001:9001
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:9000
+    depends_on:
+        - scientificoperationscenter.api
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  
+
+  scientificoperationscenter.api:
+    image: cherrytreegee811/scientificoperationscenterapi:latest
+    container_name: scientificoperationscenterapi
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8000
+    networks:
+        - science-net
+    depends_on:
+        - scientificoperationscenter.auth
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+   
+
+  scientificoperationscenter.auth:
+    image: cherrytreegee811/scientificoperationscenterauth:latest
+    container_name: scientificoperationscenterauth
+    ports:
+      - "8060:8060"
+      - "8061:8061"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8060
+    networks:
+        - science-net
+    depends_on:
+        - sqlpreview
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8060/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+
+  sqlpreview:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlpreview
+    networks:
+        - science-net
+    ports:
+        - 1433:1433
+    environment:
+        ACCEPT_EULA: Y
+        MSSQL_SA_PASSWORD: SATestPassword10*
+    healthcheck:
+        test: ["CMD-SHELL", "echo 'SELECT 1' | /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P SATestPassword10*"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+networks:
+    science-net:
+        driver: bridge
