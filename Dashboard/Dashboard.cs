@@ -29,7 +29,8 @@ namespace Dashboard
         {
             // Initialize the HTTP listener
             httpListener = new HttpListener();
-            httpListener.Prefixes.Add("http://localhost:9000/"); // Listen on localhost and port 9000
+
+            httpListener.Prefixes.Add("http://localhost:9000/"); // listens to authenication token
             httpListener.Start();
 
             // Update the UI
@@ -40,6 +41,8 @@ namespace Dashboard
         }
         private async Task HandleRequests()
         {
+            await sendMessage.SendAuthenticationRequestAsync(); // authenicating connection first
+
             while (httpListener.IsListening)
             {
                 try
@@ -51,14 +54,9 @@ namespace Dashboard
                     var request = context.Request;
                     if (request.HttpMethod == "POST" && request.ContentType == "application/json")
                     {
-                        // Read the JSON data
-                        using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
-                        {
-                            var json = await reader.ReadToEndAsync();
-                            UpdateStatus(json);
-                            SpaceCraftPacket = SpaceCraftPacketHandler.DeserializeSpacePacket(json);
-                            DisplaySpacePacket(SpaceCraftPacket);
-                        }
+                        var queryparameters = System.Web.HttpUtility.ParseQueryString(request.Url!.Query);
+                        string parameterValue = queryparameters["packet"];
+                        UpdateStatus(parameterValue);
                     }
 
                     // Send a response
