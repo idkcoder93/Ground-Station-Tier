@@ -11,7 +11,7 @@ namespace Dashboard
     {
         private static readonly HttpClient client = new HttpClient();
 
-        private readonly string clientUrl = "http://localhost:5001/api/send";
+        private readonly string clientSendEndpoint = "http://localhost:25000/api/uplink/send";
 
         // Sends an HTTP POST request with JSON data
         private readonly Dictionary<string, string> loginInfo = new()
@@ -24,7 +24,7 @@ namespace Dashboard
             try
             {
                 // Base URL of the API
-                string baseUrl = "http://localhost:5001/api/Authenticator/login";
+                string baseUrl = "http://localhost:25000/api/Authenticator/login";
 
                 // Serialize the login information as JSON
                 var jsonPayload = JsonSerializer.Serialize(loginInfo);
@@ -53,8 +53,11 @@ namespace Dashboard
         {
             try
             {
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync(clientUrl, content);
+                string packet = "{\"Date\":\"2024-11-07T19:26:34.0177707-05:00\",\"FunctionType\":\"increasethrustfunction\",\"Command\":\"8\",\"PacketCRC\":\"some_crc_value\"}";
+                // Send it with content-type "application/json"
+                var content = new StringContent(packet, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(clientSendEndpoint, content);
                 response.EnsureSuccessStatusCode(); // Throws if the status code is not successful
                 return await response.Content.ReadAsStringAsync();
             }
@@ -65,6 +68,8 @@ namespace Dashboard
                 return null;
             }
         }
+
+
 
         private string ConvertJsonToUrl(string baseUrl, Dictionary<string, string> json)
         {

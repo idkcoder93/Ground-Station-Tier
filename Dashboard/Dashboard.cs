@@ -24,6 +24,8 @@ namespace Dashboard
             InitializeComponent();
             StartHttpListener();
             status.StatusState = "ONLINE"; // online when launched
+            Task.Run(() => BandWidthDisplay());
+            Task.Run(() => LatencyDisplay());
         }
         private async void StartHttpListener()
         {
@@ -57,6 +59,7 @@ namespace Dashboard
                         var queryparameters = System.Web.HttpUtility.ParseQueryString(request.Url!.Query);
                         string parameterValue = queryparameters["packet"];
                         UpdateStatus(parameterValue);
+                        DisplayReceivedData(parameterValue);
                     }
 
                     // Send a response
@@ -98,7 +101,7 @@ namespace Dashboard
                 return;
             }
 
-            if (!await SendPacket(command))
+            if (!await SendPacket())
             {
                 consoleTextBox.AppendText("Error: Packet not sent\n");
             }
@@ -151,26 +154,30 @@ namespace Dashboard
             MessageBox.Show($"Inputs are invalid. {message}", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
-        private async Task<bool> SendPacket(Command command)
+        private async Task<bool> SendPacket()
         {
-            // Concatenate telemetry data for the packet
-            string function = $"{command.Latitude},{command.Longitude},{command.Altitude},{command.Speed}";
-
-            // Initialize packet
-            GroundStationPacket currentPacket = handler.CreatePacket(command.CommandType, function, "0xFFFF");
-
-            // Convert to JSON
-            string jsonPacket = handler.SerializePacket(currentPacket);
-
-            // Send packet
-            if (handler.SendPacket(currentPacket))
+            try
             {
-                consoleTextBox.AppendText("Packet sent:\n" + jsonPacket + "\n");
-                await sendMessage.SendHttpRequestAsync(jsonPacket); // sends pack to spacecraft
+                // Concatenate telemetry data for the packet
+                string function = $"{latInput.Text},{longInput.Text},{altInput.Text},{speedInput.Text}";
+                string commandType = commandInput.Text;
+
+                // Construct the string literal for the JSON packet
+                string command = $"{{\"Date\":\"{DateTime.Now.ToString("o")}\",\"FunctionType\":\"{function}\",\"Command\":\"{commandType}\",\"PacketCRC\":\"0xFFFF\"}}";
+
+                // Log the packet to the console or UI
+                consoleTextBox.AppendText("Packet sent:\n" + command + "\n");
+
+                // Send the JSON packet
+                await sendMessage.SendHttpRequestAsync(command);
                 return true;
             }
-
-            return false;
+            catch (Exception ex)
+            {
+                // Handle exceptions (e.g., invalid inputs)
+                consoleTextBox.AppendText("Error while sending packet:\n" + ex.Message + "\n");
+                return false;
+            }
         }
 
         private void StoreCommandInDatabase(Command command)
@@ -194,6 +201,59 @@ namespace Dashboard
             }
         }
 
+        private void LatencyDisplay()
+        {
+            while (true)
+            {
+                Random r = new Random();
+                int bandWidth = r.Next(1, 50); // Generate random value in the range 1 - 10
+
+                // Sleep for one second
+                System.Threading.Thread.Sleep(1000);
+
+                // Update the TextBox safely
+                UpdateTextBoxSafely(latencyTextBox, bandWidth.ToString());
+            }
+        }
+
+        private void BandWidthDisplay()
+        {
+            while (true)
+            {
+                Random r = new Random();
+                int bandWidth = r.Next(1, 10); // Generate random value in the range 1 - 10
+
+                // Sleep for one second
+                System.Threading.Thread.Sleep(1000);
+
+                // Update the TextBox safely
+                UpdateTextBoxSafely(bandTextBox, bandWidth.ToString());
+            }
+        }
+
+        private void DisplayReceivedData(string json)
+        {
+            // Deserialize the JSON into a SpaceCraftPacket object
+            SpaceCraftPacket packet = SpaceCraftPacketHandler.DeserializeSpacePacket(json);
+
+            // Safely update UI controls using Invoke
+            UpdateTextBoxSafely(dateTextBox, packet.Datetime);
+            UpdateTextBoxSafely(dataTypeTextBox, packet.DataType);
+            UpdateTextBoxSafely(radTextBox, packet.Data);
+            UpdateTextBoxSafely(tempTextBox, packet.Data);
+        }
+
+        private void UpdateTextBoxSafely(TextBox textBox, string value)
+        {
+            if (textBox.InvokeRequired)
+            {
+                textBox.Invoke(new Action(() => textBox.Text = value));
+            }
+            else
+            {
+                textBox.Text = value;
+            }
+        }
         private bool IsCommandInputValid(Command c)
         {
             if (c.Latitude <= 90 && c.Latitude >= -90 && c.Longitude <= 180 && c.Longitude >= -180 && c.Speed > 0)
@@ -210,16 +270,6 @@ namespace Dashboard
         {
             Regex regex = new Regex("^[a-zA-Z]+$");
             return regex.IsMatch(c.CommandType);
-        }
-
-        private void DisplaySpacePacket(SpaceCraftPacket packet)
-        {
-            if (packet == null) return;
-            else
-            {
-                latSatTextBox.Text = packet.Datetime;
-                longSatTextBox.Text = packet.Data;
-            }
         }
 
         private void consoleTextBox_TextChanged(object sender, EventArgs e)
@@ -240,10 +290,6 @@ namespace Dashboard
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             httpListener?.Stop();
-        }
-        private void satRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }
